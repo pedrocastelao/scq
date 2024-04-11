@@ -1,0 +1,28 @@
+<!-- views/editarCliente.ejs -->
+<html>
+<head>
+  <title>Editar Cliente</title>
+</head>
+<body>
+  <h1>Editar Cliente</h1>
+
+  <form action="/cliente/editar/<%= cliente.cpf %>" method="post">
+    <label for="nome">Nome:</label>
+    <input type="text" name="nome" value="<%= cliente.nome %>" required>
+
+    <label for="cpf">CPF:</label>
+    <input type="text" name="cpf" value="<%= cliente.cpf %>" required>
+
+    <label for="celular">Celular:</label>
+    <input type="text" name="celular" value="<%= cliente.celular %>" required>
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" value="<%= cliente.email %>" required>
+
+    <label for="senha">Senha:</label>
+    <input type="password" name="senha" value="<%= cliente.senha %>" required>
+
+    <button type="submit">Atualizar Cliente</button>
+  </form>
+</body>
+</html>

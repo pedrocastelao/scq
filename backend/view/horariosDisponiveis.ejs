@@ -1,0 +1,70 @@
+<!-- views/horariosDisponiveis.ejs -->
+<html>
+<head>
+  <title>Horários Disponíveis</title>
+  <!-- Inclua seus estilos CSS aqui, se necessário -->
+  <style>
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around; /* ou "space-between" para espaçamento uniforme */
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px;
+      width: 150px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      background-color: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+  <h1>Horários Disponíveis para Reserva (<%= tipoQuadra %> - <%= localizacaoQuadra %>)</h1>
+  <hr>
+
+  <% if (Array.isArray(horariosDisponiveis) && horariosDisponiveis.length > 0) { %>
+    <div class="card-container">
+      <% for (let i = 0; i < horariosDisponiveis.length; i++) { %>
+        <div class="card" onclick="reservarHorario('<%= horariosDisponiveis[i] %>')">
+          <p><%= horariosDisponiveis[i] %></p>
+        </div>
+      <% } %>
+    </div>
+  <% } else { %>
+    <p>Não há horários disponíveis para reserva.</p>
+  <% } %>
+
+  <script>
+    // Função para realizar a reserva e redirecionar para a tela de reserva
+    function reservarHorario(horario) {
+      // Enviar uma solicitação para o servidor para reservar o horário
+      fetch('/reservar-horario', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ horario }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Lógica para lidar com a resposta do servidor
+        console.log(data);
+        // Adicione qualquer lógica adicional conforme necessário
+
+        // Redirecionar para a tela de reserva
+        window.location.href = '/telaReservas';  // Substitua pela rota real da tela de reservas
+      })
+      .catch(error => {
+        console.error('Erro ao realizar a reserva:', error);
+        // Lógica para lidar com erros
+      });
+    }
+  </script>
+</body>
+</html>

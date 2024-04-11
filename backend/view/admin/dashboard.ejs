@@ -1,0 +1,33 @@
+<html>
+<head>
+  <title>Admin Panel - Dashboard</title>
+</head>
+<body>
+  <h1>Dashboard</h1>
+  
+  <h1>Todas as Reservas</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Reserva (Data - Hora)</th>
+        <th>Qadra (Local - Preço)</th>
+        <th>Cliente (Contato)</th>
+        <th>Alterar</th>
+        <th>Excluir</th>
+        <!-- Adicione mais colunas conforme necessário -->
+      </tr>
+    </thead>
+    <tbody>
+      <% todasAsReservas.forEach(reserva => { %>
+        <tr>
+          <td><%= reserva.data %> - <%= reserva.hora %></td>
+          <td><%= reserva.Quadra.tipo %> - R$ <%= reserva.Quadra.preco %></td>
+          <td><%= reserva.Cliente.nome %> - <%= reserva.Cliente.celular %></td>
+          <!-- Adicione mais colunas conforme necessário -->
+        </tr>
+        <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>

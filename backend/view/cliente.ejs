@@ -1,0 +1,22 @@
+<html>
+<head>
+  <title>Detalhes do Cliente</title>
+  <!-- Inclua seus estilos CSS aqui, se necessário -->
+</head>
+<body>
+  <h1>Detalhes do Cliente</h1>
+
+  <ul>
+    <li><strong>ID:</strong> <%= cliente.id %></li>
+    <li><strong>Nome:</strong> <%= cliente.nome %></li>
+    <li><strong>CPF:</strong> <%= cliente.cpf %></li>
+    <li><strong>Celular:</strong> <%= cliente.celular %></li>
+    <li><strong>Email:</strong> <%= cliente.email %></li>
+    <!-- Adicione mais informações conforme necessário -->
+  </ul>
+
+  <a href="/cliente/editar/<%= cliente.cpf %>">Editar Cliente</a>
+
+  <!-- Inclua seus scripts JavaScript aqui, se necessário -->
+</body>
+</html>

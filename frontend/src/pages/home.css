@@ -1,0 +1,47 @@
+/* Estilos para o container da página inicial */
+.home-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #f8f9fa; /* Fundo cinza claro */
+  color: #343a40; /* Texto preto */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Estilos para o título */
+.home-container h1 {
+  margin-bottom: 20px; /* Espaçamento abaixo do título */
+  font-size: 2rem; /* Tamanho grande para o título */
+  color: #007bff; /* Cor azul para o título */
+}
+
+/* Estilos para o menu */
+.menu {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px; /* Espaçamento abaixo do menu */
+}
+
+/* Estilos para cada item do menu */
+.menu-item {
+  margin: 0 10px; /* Espaçamento entre os itens do menu */
+}
+
+/* Estilos para os links do menu */
+.menu-item a {
+  text-decoration: none; /* Remover sublinhado padrão */
+  color: #343a40; /* Cor preta para os links */
+  font-size: 1.2rem; /* Tamanho do texto */
+  padding: 10px 20px; /* Preenchimento interno */
+  border-radius: 5px; /* Borda arredondada */
+  transition: background-color 0.3s ease; /* Transição suave */
+}
+
+/* Estilos quando o mouse passa por cima dos links */
+.menu-item a:hover {
+  background-color: #007bff; /* Fundo azul quando hover */
+  color: #fff; /* Texto branco quando hover */
+}

@@ -1,0 +1,46 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-form {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-form h2 {
+  margin-bottom: 20px;
+}
+
+.login-form input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background-color: #0056b3;
+}
+
+
+.error-message {
+  color: red; /* Define a cor do texto como vermelho */
+  font-size: 14px; /* Define o tamanho da fonte */
+  margin-top: 5px; /* Adiciona um espaço acima da mensagem de erro */
+}

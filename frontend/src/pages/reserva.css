@@ -1,0 +1,44 @@
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Ofusca o conteúdo por trás */
+}
+
+.modal-card {
+  background-color: #fefefe;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 80%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* Adiciona espaçamento inferior ao card-header */
+}
+.card-body {
+  margin-top: 20px; /* Adiciona espaçamento superior ao card-body */
+}
+.close-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: red; /* Altera a cor do ícone ao passar o mouse */
+}
+
+.card-title {
+  font-size: 19px;
+  color: #333; /* Cor do título */
+  margin-bottom: 10px; /* Espaçamento inferior */
+}
