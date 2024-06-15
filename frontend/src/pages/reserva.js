@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./reserva.css";
+import "./css/reserva.css";
 import Menu from "./menu";
 import ModalReserva from "./modalReserva";
 import api from "./api";
@@ -13,50 +13,39 @@ function Reserva() {
   const [clienteReservas, setClienteReservas] = useState([]);
 
   // Use o useEffect para chamar fetchData quando o componente for montado
-  useEffect(
-    () => {
-      // Função para carregar as informações do cliente e suas reservas
-      const fetchData = async () => {
-        try {
-          const token = authService.getToken();
-          // Faça uma solicitação para obter as informações do cliente e suas reservas
-          const response = await api.get("/reserva", {
-            headers: {
-              Authorization: `Bearer ${token}`, // Adicione o token JWT no cabeçalho Authorization
-              "Content-Type": "application/json", // Especifique o tipo de conteúdo da solicitação
-            },
-          });
-          //console.log("response.data", response);
-          setClienteReservas(response.data);
-        } catch (error) {
-          console.error(
-            "Erro ao obter dados do cliente e suas reservas:",
-            error
-          );
-        }
-      };
+  useEffect(() => {
+    // Função para carregar as informações do cliente e suas reservas
+    const fetchData = async () => {
+      try {
+        const token = authService.getToken();
+        // Faça uma solicitação para obter as informações do cliente e suas reservas
+        const response = await api.get("/reservas", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Adicione o token JWT no cabeçalho Authorization
+            "Content-Type": "application/json", // Especifique o tipo de conteúdo da solicitação
+          },
+        });
+        setClienteReservas(response.data);
+      } catch (error) {
+        console.error("Erro ao obter dados do cliente e suas reservas:", error);
+      }
+    };
 
-      fetchData();
+    fetchData();
+  }, []); /* [] para executar apenas uma vez ao montar o componente */
 
-      //console.log("Valor atualizado de showModal:", showModal);
-    },
-    [] /*[showModal]*/
-  );
   // Função para editar uma reserva
   const editarReserva = (id) => {
-    // Lógica para editar a reserva com o ID fornecido
     console.log("Editar reserva com ID:", id);
   };
 
   // Função para excluir uma reserva
   const excluirReserva = (id) => {
-    // Lógica para excluir a reserva com o ID fornecido
     console.log("Excluir reserva com ID:", id);
   };
 
   // Função para abrir a modal
   const openModal = () => {
-    console.log("Antes de setShowModal(true):", showModal);
     setShowModal(true);
   };
 
@@ -66,13 +55,15 @@ function Reserva() {
   };
 
   return (
-    <div>
+    <div id="reserva">
       <Menu />
-      <div className="container mt-5">
-        <h1 className="mb-4 text-center">Reservas</h1>
-        <button className="btn btn-primary mb-4" onClick={openModal}>
-          Fazer Reserva
-        </button>
+      <div className="container mt-2 content-container">
+        <h1 id="titulo">Reservas</h1>
+        <div className="button-container">
+          <button id="botao-fazer-reserva" onClick={openModal}>
+            Fazer Reserva
+          </button>
+        </div>
         {/* Tabela de reservas */}
         <TabelaReservas
           reservas={clienteReservas}

@@ -31,5 +31,3 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", Rotas);
-//app.use("/login-admin", Login.verificarLoginAdminCliente);
-//app.use("/admin", Login.verificarLoginAdmin);

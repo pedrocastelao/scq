@@ -1,13 +1,22 @@
 import React, { useState } from "react";
-import "./tabelaReserva.css";
+import { Pagination, Modal, Button } from "antd";
+import "./css/tabelaReserva.css";
 
 const TabelaReservas = ({ reservas, editarReserva, excluirReserva }) => {
   // Estado para controlar a página atual e o número de itens por página
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 5;
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [modalVisivel, setModalVisivel] = useState(false);
+  const [reservaSelecionada, setReservaSelecionada] = useState(null);
 
   // Calcula o número total de páginas
   const totalPaginas = Math.ceil(reservas.length / itensPorPagina);
+
+  // Função para controlar a mudança de página
+  const handlePaginacaoChange = (pagina) => {
+    setPaginaAtual(pagina);
+  };
 
   // Calcula o índice do primeiro e último item a serem exibidos na página atual
   const indicePrimeiroItem = (paginaAtual - 1) * itensPorPagina;
@@ -19,112 +28,136 @@ const TabelaReservas = ({ reservas, editarReserva, excluirReserva }) => {
     indiceUltimoItem
   );
 
-  // Função para mudar para a próxima página
-  const proximaPagina = () => {
-    if (paginaAtual < totalPaginas) {
-      setPaginaAtual(paginaAtual + 1);
-    }
+  // Função para abrir a modal com os detalhes da reserva
+  const mostrarDetalhes = (reserva) => {
+    setReservaSelecionada(reserva);
+    setModalVisivel(true);
   };
 
-  // Função para mudar para a página anterior
-  const paginaAnterior = () => {
-    if (paginaAtual > 1) {
-      setPaginaAtual(paginaAtual - 1);
-    }
+  // Função para fechar a modal
+  const fecharModal = () => {
+    setModalVisivel(false);
+    setReservaSelecionada(null);
   };
 
   return (
-    <>
-      <table className="table mx-auto">
+    <div id="tabela-container" style={{ width: "120%" }}>
+      {mostrarFiltros && (
+        <div id="filtros-dropdown">
+          {/* Conteúdo dos filtros aqui */}
+          <h4>Filtros</h4>
+          <label>Data:</label>
+          <input type="date" className="form-control mb-2" />
+          <label>Localização:</label>
+          <input type="text" className="form-control mb-2" />
+          <button className="btn btn-primary btn-sm">Aplicar</button>
+        </div>
+      )}
+
+      <table id="tabela-reservas" className="table mx-auto">
         {/* Cabeçalho da tabela */}
         <thead>
           <tr>
-            <th scope="col" className="text-center">
-              Data
-            </th>
-            <th scope="col" className="text-center">
-              Horário Início
-            </th>
-            <th scope="col" className="text-center">
-              Horário Fim
-            </th>
-            <th scope="col" className="text-center">
-              Quadra
-            </th>
-            <th scope="col" className="text-center">
-              Localização
-            </th>
-            <th scope="col" className="text-center">
-              Preço
-            </th>
-            <th scope="col" className="text-center">
-              Ações
-            </th>
+            <th scope="col">Quadra</th>
+            <th scope="col">Localização</th>
+            <th scope="col">Ações</th>
           </tr>
         </thead>
         {/* Corpo da tabela */}
         <tbody>
           {reservasPaginadas.map((reserva) => (
             <tr key={reserva.id}>
-              <td className="text-center">{reserva.data}</td>
-              <td className="text-center">{reserva.horaInicio}</td>
-              <td className="text-center">{reserva.horaFim}</td>
-              <td className="text-center">{reserva.quadra.tipo}</td>
-              <td className="text-center">{reserva.quadra.localizacao}</td>
-              <td className="text-center">{reserva.quadra.preco}</td>
-              <td className="text-center">
+              <td>{reserva.quadra.tipo}</td>
+              <td>{reserva.quadra.localizacao}</td>
+              <td>
                 {/* Botões de ação para editar e excluir */}
                 <button
-                  className="btn"
-                  onClick={() => editarReserva(reserva.id)}
+                  className="btn btn-sm btn-outline-primary mr-2"
+                  onClick={() => mostrarDetalhes(reserva)}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    class="bi bi-pencil-square"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                    <path
-                      fill-rule="evenodd"
-                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                    />
-                  </svg>
+                  Detalhes
                 </button>
                 <button
-                  className="btn btn-danger"
+                  className="btn btn-sm btn-outline-danger"
                   onClick={() => excluirReserva(reserva.id)}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    class="bi bi-trash"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                  </svg>
+                  Excluir
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* Controles de paginação e quantidade de páginas */}
+      {/* Controles de paginação */}
       <div className="text-center">
-        <button className="btn-custom" onClick={paginaAnterior}>
-          Anterior
-        </button>{" "}
-        {paginaAtual} de {totalPaginas}{" "}
-        <button className="btn-custom" onClick={proximaPagina}>
-          Proxima
-        </button>
+        <Pagination
+          current={paginaAtual}
+          total={reservas.length}
+          pageSize={itensPorPagina}
+          onChange={handlePaginacaoChange}
+        />
       </div>
-    </>
+
+      {/* Modal para exibir os detalhes da reserva */}
+      <Modal
+        style={{
+          fontSize: "21px",
+          lineHeight: "31.5px",
+          color: "#000000",
+          letterSpacing: "normal",
+          textAlign: "center",
+        }}
+        title="Detalhes da Reserva"
+        visible={modalVisivel}
+        onCancel={fecharModal}
+        footer={[
+          <Button key="fechar" onClick={fecharModal}>
+            Fechar
+          </Button>,
+        ]}
+      >
+        <hr />
+        {reservaSelecionada && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              textAlign: "start",
+              fontSize: "16px",
+              lineHeight: "28px",
+            }}
+          >
+            <div>
+              <p>
+                <strong>Data:</strong> {reservaSelecionada.data}
+              </p>
+              <hr />
+              <p>
+                <strong>Horário Início:</strong> {reservaSelecionada.horaInicio}
+              </p>
+              <hr />
+              <p>
+                <strong>Horário Fim:</strong> {reservaSelecionada.horaFim}
+              </p>
+            </div>
+            <div>
+              <p>
+                <strong>Quadra:</strong> {reservaSelecionada.quadra.tipo}
+              </p>
+              <hr />
+              <p>
+                <strong>Localização:</strong>{" "}
+                {reservaSelecionada.quadra.localizacao}
+              </p>
+              <hr />
+              <p>
+                <strong>Preço:</strong> {reservaSelecionada.quadra.preco}
+              </p>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
   );
 };
 

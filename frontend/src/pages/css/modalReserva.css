@@ -1,0 +1,95 @@
+/* modalReserva.css */
+#modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+#modal-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 80%; /* Aumenta a largura para 80% da tela */
+  max-width: 800px; /* Ajusta a largura máxima */
+  padding: 30px; /* Aumenta o padding */
+  box-sizing: border-box; /* Garante que o padding seja incluído nas dimensões totais */
+}
+
+#card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+#card-title {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+#close-button {
+  background-color: #E46A76;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+#close-button:hover {
+  background-color: #E46A76;
+  color: white;
+}
+
+#card-body {
+  padding: 20px 0;
+}
+
+#form-group {
+  margin-bottom: 15px;
+}
+
+#data {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.resposta-message {
+  margin-top: 20px;
+}

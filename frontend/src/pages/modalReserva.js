@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "./modalReserva.css";
 import QuadrasList from "./quadraList";
-import "./quadraLista.css";
+import "./css/quadraLista.css";
 import api from "./api";
 import authService from "./authService";
 import HoraSelecao from "./horaSelecao";
+import { Alert, message } from "antd";
 
 const ModalReserva = ({ showModal, closeModal }) => {
   const [data, setData] = useState("");
@@ -13,28 +13,26 @@ const ModalReserva = ({ showModal, closeModal }) => {
   const [quadraId, setQuadraId] = useState("");
   const [disponibilidade, setDisponibilidade] = useState(false);
   const [mensagemResposta, setMensagemResposta] = useState("");
-  const [camposDesabilitados, setCamposDesabilitados] = useState(false); // Estado para controlar a habilitação dos campos
+  const [camposDesabilitados, setCamposDesabilitados] = useState(false);
 
-  const handleQuadraChange = (selectedQuadraId) => {
-    setQuadraId(selectedQuadraId);
+  // Função para limpar os campos de entrada
+  const limparCampos = () => {
+    setData("");
+    setHoraInicio("");
+    setHoraFim("");
+    setQuadraId("");
+    setDisponibilidade(false);
+    setMensagemResposta("");
+    setCamposDesabilitados(false);
   };
 
-  const handleDateChange = (e) => {
-    setData(e.target.value);
+  // Função para fechar a modal e limpar os campos
+  const handleCloseModal = () => {
+    limparCampos();
+    closeModal();
   };
 
-  const handleHoraInicioChange = (e) => {
-    setHoraInicio(e.target.value);
-    // Limpa a hora de fim se for anterior à hora de início selecionada
-    if (horaFim < e.target.value) {
-      setHoraFim("");
-    }
-  };
-
-  const handleHoraFimChange = (e) => {
-    setHoraFim(e.target.value);
-  };
-
+  // Função para verificar disponibilidade da reserva
   const handleVerificarDisponibilidade = async (e) => {
     e.preventDefault();
     try {
@@ -49,22 +47,27 @@ const ModalReserva = ({ showModal, closeModal }) => {
           },
         }
       );
-      setMensagemResposta(response.data.message);
+      setMensagemResposta(
+        <Alert message={response.data.message} type="success" />
+      );
       setDisponibilidade(true);
-      setCamposDesabilitados(true); // Desabilita os campos após verificar a disponibilidade
+      setCamposDesabilitados(true);
     } catch (error) {
-      console.error("Erro ao verificar disponibilidade:", error);
-      setMensagemResposta("Erro ao verificar disponibilidade");
+      console.error(error);
+      setMensagemResposta(
+        <Alert message="Data e Horario não Disponivel!" type="error" />
+      );
     }
   };
 
+  // Função para fazer a reserva
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const token = authService.getToken();
       const response = await api.post(
-        "/reserva/cadastrar",
+        "/reserva/nova",
         { data, horaInicio, horaFim, quadraId },
         {
           headers: {
@@ -74,64 +77,71 @@ const ModalReserva = ({ showModal, closeModal }) => {
         }
       );
       setMensagemResposta(response.data.message);
-      //setDisponibilidade(true);
-      //setCamposDesabilitados(true); // Desabilita os campos após verificar a disponibilidade
+
+      // Exibe a mensagem de sucesso usando o componente de mensagem do Ant Design
+      message.success("Reserva feita com sucesso!");
+
+      // Limpa os campos e fecha a modal
+      limparCampos();
+      closeModal();
+
+      // Recarrega a página após 5 segundos
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000); // 5000 milissegundos = 5 segundos
     } catch (error) {
-      console.error("fazer a reserva", error);
-      //setMensagemResposta("Erro ao verificar disponibilidade");
+      console.error("Erro ao fazer a reserva:", error);
+      message.error("Erro ao fazer a reserva. Por favor, tente novamente.");
     }
   };
 
   return (
     showModal && (
-      <div className="modal-container">
-        <div className="modal-card">
-          <div className="card-header">
-            <h2 className="card-title">Cadastro de Reserva</h2>
-            <button className="close-button" onClick={closeModal}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-x-octagon"
-                viewBox="0 0 16 16"
-              >
-                <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1z" />
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-              </svg>
+      <div id="modal-container">
+        <div id="modal-card">
+          <div id="card-header">
+            <h2 id="card-title">Cadastro de Reserva</h2>
+            <button id="close-button" onClick={handleCloseModal}>
+              Fechar
             </button>
           </div>
-          <div className="card-body">
+          <div id="card-body">
             <form>
               <QuadrasList
-                onChange={handleQuadraChange}
-                disabled={camposDesabilitados} // Passa o estado de habilitação
+                onChange={(selectedQuadraId) => setQuadraId(selectedQuadraId)}
+                disabled={camposDesabilitados}
               />
-              <div className="form-group">
+              <div id="form-group">
                 <label htmlFor="data">Data:</label>
                 <input
                   type="date"
                   id="data"
                   value={data}
                   min={new Date().toISOString().split("T")[0]}
-                  onChange={handleDateChange}
+                  onChange={(e) => setData(e.target.value)}
                   required
                 />
               </div>
 
-              <div className="form-group">
+              <div id="form-group">
                 <HoraSelecao
                   horaInicio={horaInicio}
-                  handleHoraInicioChange={handleHoraInicioChange}
+                  handleHoraInicioChange={(e) => {
+                    setHoraInicio(e.target.value);
+                    if (horaFim < e.target.value) {
+                      setHoraFim("");
+                    }
+                  }}
                   horaFim={horaFim}
-                  handleHoraFimChange={handleHoraFimChange}
+                  handleHoraFimChange={(e) => setHoraFim(e.target.value)}
                 />
               </div>
               <button
                 className="btn btn-secondary mb-4 mr-2"
                 onClick={handleVerificarDisponibilidade}
-                disabled={camposDesabilitados} // Desabilita se camposDesabilitados for verdadeiro
+                disabled={
+                  !data || !horaInicio || !horaFim || camposDesabilitados
+                }
               >
                 Verificar Disponibilidade
               </button>

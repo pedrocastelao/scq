@@ -11,6 +11,7 @@ const clienteCtrl = {
   getAllClientes: async (req, res) => {
     try {
       const clienteSession = req.clienteLogado;
+      console.log(clienteSession);
       const clientesFormatados = {
         id: clienteSession.id,
         nome: clienteSession.nome,
@@ -40,9 +41,7 @@ const clienteCtrl = {
       });
 
       //await emailController.sendConfirmEmail(nome, email, token);
-      res.status(201).json(novoCliente.toJSON(), {
-        message: "Cliente cadastrado. Enviado email para confirmação",
-      });
+      res.status(201).json(novoCliente);
     } catch (error) {
       console.error("{Controller} Erro ao cadastrar o cliente:", error);
       res.status(500).json({

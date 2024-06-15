@@ -6,6 +6,7 @@ import { AuthProvider, Context } from "../context/authContext";
 import Login from "../pages/login";
 import Home from "../pages/home";
 import Reserva from "../pages/reserva";
+import ConfirmarPagamento from "../pages/confirmarPagamento";
 
 function PrivateRoute({ isPrivate, children }) {
   const { authenticated } = useContext(Context);
@@ -31,6 +32,15 @@ const Rotas = () => {
             element={
               <PrivateRoute isPrivate>
                 <Reserva />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            isPrivate
+            path="/confirmaPagamento"
+            element={
+              <PrivateRoute isPrivate>
+                <ConfirmarPagamento />
               </PrivateRoute>
             }
           />

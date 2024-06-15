@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import "./login.css";
+import "./css/login.css";
 import { Context } from "../context/authContext";
 
 export default function Login() {
@@ -20,24 +20,45 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Login</h2>
-        <input
-          type="text"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-        <button type="submit">Login</button>
-        {error && <p className="error-message">{error}</p>}
-      </form>
+    <div id="login-container">
+      <div id="login-left">
+        <div id="logo">brands HUB</div>
+      </div>
+      <div id="login-right">
+        <h2>Bem vindo ao Painel Admin</h2>
+        <p>Entre com suas credenciais</p>
+        <form id="login-form" onSubmit={handleSubmit}>
+          <div id="email-container">
+            <label htmlFor="email">E-mail</label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div id="password-container">
+            <label htmlFor="password">Senha</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
+          </div>
+          <a href="#" id="forgot-password">
+            Esqueceu a senha?
+          </a>
+          <button type="submit" id="login-button">
+            Login
+          </button>
+          {error && <p className="error-message">{error}</p>}
+        </form>
+      </div>
     </div>
   );
 }

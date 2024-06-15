@@ -53,7 +53,7 @@ const reservaCtrl = {
         //console.log("data antes de formatar", reserva.data),
         ({
           id: reserva.id,
-          data: reserva.data,
+          data: Util.formatardata(reserva.data),
           horaInicio: reserva.horaInicio,
           horaFim: reserva.horaFim,
           quadraId: reserva.quadraId,

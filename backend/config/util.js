@@ -1,5 +1,4 @@
 const parsePhoneNumber = require("libphonenumber-js");
-const { format } = require("date-fns");
 
 const Util = {
   // Função para formatar o número de celular
@@ -22,6 +21,28 @@ const Util = {
       currency: "BRL",
     }).format(valor);
   },
-};
 
+  formatardata(date) {
+    const meses = [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ];
+    let data = new Date(date);
+    let dataFormatada =
+      data.getDate() + " " + meses[data.getMonth()] + " " + data.getFullYear();
+    console.log("Formatada", dataFormatada);
+    return dataFormatada;
+    //saída: 31 Dez 2019},
+  },
+};
 module.exports = { Util };

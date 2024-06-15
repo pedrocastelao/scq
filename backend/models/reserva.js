@@ -51,9 +51,6 @@ Reserva.createReserva = async function (
   }
 };
 
-// Método para atualizar uma reserva existente no banco de dados
-
-
 // Método para excluir uma reserva do banco de dados
 Reserva.deleteReserva = async function (id) {
   try {
@@ -73,6 +70,7 @@ Reserva.listarReservas = async function (cliente) {
   try {
     //console.log("model  clienteId", cliente);
     const reservas = await Reserva.findAll({
+      order: [["createdAt", "DESC"]],
       where: {
         clienteId: cliente,
       },

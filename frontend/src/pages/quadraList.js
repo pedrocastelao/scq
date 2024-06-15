@@ -42,7 +42,7 @@ const QuadrasList = ({ onChange, disabled }) => {
         disabled={disabled}
         className="quadras-list-select"
       >
-        <option value="">Selecione...</option>
+        <option value=""></option>
         {quadras.map((quadra) => (
           <option key={quadra.id} value={quadra.id}>
             {quadra.tipo} - {quadra.localizacao}
