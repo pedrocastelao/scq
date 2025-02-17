@@ -1,0 +1,188 @@
+/* SelecaoHora.css */
+.selecao-hora-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.selecao-hora-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selecao-title {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.time-selection-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.time-label {
+  color: #555;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.time-select {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.time-select:hover {
+  border-color: #007bff;
+}
+
+/* Estilo para as opções do select */
+.time-select option {
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  .time-selection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selecao-hora-card {
+    padding: 1.5rem;
+  }
+
+  .selecao-title {
+    font-size: 1.3rem;
+  }
+}
+
+/* SelecaoHora.css */
+.no-times-message {
+  text-align: center;
+  color: #666;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px dashed #dee2e6;
+}
+
+.time-selection-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.time-select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.time-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+.loading-message,
+.error-message {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.loading-message {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+.selecao-hora-container {
+  padding: 1rem;
+}
+
+.selecao-hora-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selecao-title {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.time-selection-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.time-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.time-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.loading-message,
+.error-message,
+.no-times-message {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.loading-message {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.no-times-message {
+  background-color: #f5f5f5;
+  color: #666;
+}

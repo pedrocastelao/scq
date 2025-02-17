@@ -1,25 +1,62 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import "./css/home.css"; // Importe o arquivo CSS para aplicar estilos
+import "bootstrap/dist/css/bootstrap.min.css";
 
-function Home() {
+const Footer = () => {
   return (
-    <div className="home-container">
-      <h1>Bem-vindo à Página Inicial</h1>
-      <nav className="menu">
-        <div className="menu-item">
-          <Link to="/localizacao">Localização</Link>
+    <footer className="bg-dark text-white mt-5">
+      <div className="container py-4">
+        <div className="row">
+          <div className="col-md-4">
+            <h5>Sobre Nós</h5>
+            <p>Informações sobre a empresa e sua missão.</p>
+          </div>
+          <div className="col-md-4">
+            <h5>Links Úteis</h5>
+            <ul className="list-unstyled">
+              <li>
+                <a href="#" className="text-white">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-white">
+                  Produtos
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-white">
+                  Contato
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="col-md-4">
+            <h5>Redes Sociais</h5>
+            <ul className="list-unstyled">
+              <li>
+                <a href="#" className="text-white">
+                  Facebook
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-white">
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-white">
+                  Twitter
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="menu-item">
-          <Link to="/contato">Contato</Link>
+        <div className="text-center py-3">
+          <small>&copy; 2025 Grupo Size. Todos os direitos reservados.</small>
         </div>
-        <div className="menu-item">
-          <Link to="/login">Login</Link>
-        </div>
-      </nav>
-      <p>Esta é a página inicial do nosso aplicativo.</p>
-    </div>
+      </div>
+    </footer>
   );
-}
+};
 
-export default Home;
+export default Footer;

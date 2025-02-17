@@ -22,27 +22,16 @@ const Util = {
     }).format(valor);
   },
 
-  formatardata(date) {
-    const meses = [
-      "Jan",
-      "Fev",
-      "Mar",
-      "Abr",
-      "Mai",
-      "Jun",
-      "Jul",
-      "Ago",
-      "Set",
-      "Out",
-      "Nov",
-      "Dez",
-    ];
-    let data = new Date(date);
-    let dataFormatada =
-      data.getDate() + " " + meses[data.getMonth()] + " " + data.getFullYear();
-    console.log("Formatada", dataFormatada);
-    return dataFormatada;
-    //saída: 31 Dez 2019},
+  ajustarParaGMT3(dataEmGMT) {
+    const data = new Date(dataEmGMT); // Converte para objeto Date
+    data.setDate(data.getDate() + 1); // Adiciona manualmente 1 dia para corrigir
+    const formatador = new Intl.DateTimeFormat("pt-BR", {
+      // timeZone: "America/Sao_Paulo", // Ajusta para GMT-3
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    return formatador.format(data);
   },
 };
 module.exports = { Util };

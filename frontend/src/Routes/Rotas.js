@@ -1,54 +1,48 @@
-import React, { useContext } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import Cadastro from "../components/Cadastro";
+import Reserva from "../components/Reserva";
+import Footer from "../pages/home";
 
-import { AuthProvider, Context } from "../context/authContext";
+const AppRoutes = ({
+  reservante,
+  setReservante,
+  reserva,
+  setReserva,
+  handleSubmit,
+}) => {
+  const navigate = useNavigate();
+  const handleNext = () => {
+    console.log("Reservante antes de seguir para a próxima etapa:", reservante);
+    navigate("/reserva");
+  };
 
-import Login from "../pages/login";
-import Home from "../pages/home";
-import Reserva from "../pages/reserva";
-import ConfirmarPagamento from "../pages/confirmarPagamento";
-
-function PrivateRoute({ isPrivate, children }) {
-  const { authenticated } = useContext(Context);
-  console.log("privada, autenticado", isPrivate, authenticated);
-  if (isPrivate && !authenticated) {
-    console.log("entrou aqui tambem ");
-    return <Navigate to="/login" />;
-  }
-
-  return children;
-}
-
-const Rotas = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Cadastro
+            reservante={reservante}
+            setReservante={setReservante}
+            onNext={handleNext}
+          />
+        }
+      />
+      <Route
+        path="/reserva"
+        element={
+          <Reserva
+            reserva={reserva}
+            setReserva={setReserva}
+            onSubmit={handleSubmit}
+          />
+        }
+      />
 
-          <Route
-            isPrivate
-            path="/reserva"
-            element={
-              <PrivateRoute isPrivate>
-                <Reserva />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            isPrivate
-            path="/confirmaPagamento"
-            element={
-              <PrivateRoute isPrivate>
-                <ConfirmarPagamento />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+      <Route path="/footer" element={<Footer />} />
+    </Routes>
   );
 };
 
-export default Rotas;
+export default AppRoutes;

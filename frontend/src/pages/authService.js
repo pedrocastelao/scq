@@ -2,9 +2,9 @@ import api from "./api";
 
 const authService = {
   // Função para fazer login
-  fazerLogin: async (email, senha) => {
+  fazerLogin: async (email, password) => {
     try {
-      const response = await api.post("login", { email, senha });
+      const response = await api.post("/login", { email, password });
       const { cliente, token } = response.data;
       console.log(cliente, token);
 

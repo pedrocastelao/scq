@@ -1,40 +1,42 @@
 const jwt = require("jsonwebtoken");
-const Cliente = require("../models/cliente");
+
 const Users = require("../models/users");
 const bcrypt = require("bcryptjs");
 
 const Login = {
   verificarLogin: async (req, res) => {
-    const { email, senha } = req.body;
+    const { email, password } = req.body;
+
+    console.log(email, password);
 
     try {
       // Busque o usuário no banco de dados pelo email
-      const cliente = await Cliente.findOne({ where: { email: email } });
+      const user = await Users.findOne({ where: { email: email } });
 
-      if (!cliente) {
+      if (!user) {
         // Se o usuário não foi encontrado, envie uma resposta de erro genérica
         return res.status(401).send("Credenciais inválidas");
       }
 
-      // Verifique se a senha fornecida corresponde à senha armazenada no banco de dados
-      const senhaCorreta = await bcrypt.compare(senha, cliente.senha);
+      // Verifique se a password fornecida corresponde à password armazenada no banco de dados
+      const passwordCorreta = await bcrypt.compare(password, user.password);
 
-      if (!senhaCorreta) {
-        // Se a senha estiver incorreta, envie uma resposta de erro genérica
+      if (!passwordCorreta) {
+        // Se a password estiver incorreta, envie uma resposta de erro genérica
         return res.status(401).send("Credenciais inválidas");
       }
 
       // Gerar token de autenticação
-      const token = jwt.sign({ cliente }, "chave_secreta_do_token", {
+      const token = jwt.sign({ user }, "chave_secreta_do_token", {
         expiresIn: "1h",
         subject: "1",
       });
 
       // Defina as informações do usuário e o token na resposta
       res.json({
-        cliente: {
-          id: cliente.id,
-          nome: cliente.nome,
+        user: {
+          id: user.id,
+          nome: user.nome,
         },
         token: token,
       });
@@ -61,7 +63,7 @@ const Login = {
       // Verifique se o token é válido
       const decoded = jwt.verify(token[1], "chave_secreta_do_token");
 
-      req.clienteLogado = decoded.cliente;
+      req.userLogado = decoded.user;
       // Se o token for válido, continue para a próxima rota
       next();
     } catch (error) {

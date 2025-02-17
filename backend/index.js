@@ -1,15 +1,22 @@
 const express = require("express");
 const session = require("express-session");
+const dotenv = require("dotenv");
+const path = require("path");
 const cors = require("cors");
 const bodyParser = require("body-parser"); // Importe o body-parser
-
 //banco de dados
 const sequelize = require("./persistence/Conexao.js");
 const Rotas = require("./routes/rotas.js");
+
+// Carregar as variáveis de ambiente com base no ambiente
+const env = process.env.NODE_ENV || "development";
+const envFilePath = path.join(__dirname, `../.env.${env}`);
+dotenv.config({ path: envFilePath });
+
 sequelize
   .sync({ force: false })
   .then(() => {
-    const PORT = process.env.PORT || 4000;
+    const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
       console.log(`Servidor rodando na porta ${PORT}`);
     });

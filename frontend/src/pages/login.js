@@ -7,15 +7,15 @@ export default function Login() {
   console.debug("Login", authenticated);
 
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Evita o comportamento padrão do formulário
-    // Chama a função handleLogin do contexto, passando o email e a senha como parâmetros
-    const loginSuccessful = await handleLogin(email, senha);
+    // Chama a função handleLogin do contexto, passando o email e a password como parâmetros
+    const loginSuccessful = await handleLogin(email, password);
     !loginSuccessful
-      ? setError("Email ou senha incorretos!")
+      ? setError("Email ou password incorretos!")
       : console.log("Error");
   };
 
@@ -40,18 +40,18 @@ export default function Login() {
             />
           </div>
           <div id="password-container">
-            <label htmlFor="password">Senha</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
               name="password"
-              placeholder="Senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <a href="#" id="forgot-password">
-            Esqueceu a senha?
+            Esqueceu a password?
           </a>
           <button type="submit" id="login-button">
             Login

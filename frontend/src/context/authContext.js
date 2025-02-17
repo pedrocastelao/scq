@@ -19,14 +19,16 @@ function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  async function handleLogin(email, senha) {
+  async function handleLogin(email, password) {
     try {
-      const cliente = await authService.fazerLogin(email, senha);
-      //console.log("Login bem-sucedido. Cliente:", cliente);
+      console.log(email, password);
+
+      const user = await authService.fazerLogin(email, password);
+      //console.log("Login bem-sucedido. Cliente:", user);
       setAuthenticated(true); // Define o estado de autenticação como verdadeiro
       navigate("/reserva"); // Navega para a rota "/home"
-      // Retorne os dados do cliente
-      return cliente;
+      // Retorne os dados do user
+      return user;
     } catch (error) {
       //console.error("Erro ao fazer login:", error);
       // Aqui você pode tratar o erro de acordo com sua lógica de frontend
