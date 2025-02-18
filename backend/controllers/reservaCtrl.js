@@ -5,34 +5,32 @@ const reservaCtrl = {
   newReserva: async (req, res) => {
     const {
       nome,
-      cpf,
-      email,
-      dataNascimento,
-      data,
-      horaInicio,
-      horaFim,
-      detalhes,
+      // cpf,
+      // email,
+      // dataNascimento,
+      dataInicio,
+      dataFim,
+      // detalhes,
       quadraId,
     } = req.body;
 
     try {
-      const reservaExistente = await Reserva.findOne({
-        where: { data: data, quadraId: quadraId, horaInicio: horaInicio },
-      });
+      // const reservaExistente = await Reserva.findOne({
+      //   where: { data: data, quadraId: quadraId, horaInicio: horaInicio },
+      // });
 
-      if (reservaExistente) {
-        return res.status(400).json({ error: "o Horario ja esta Reservado!" });
-      }
+      // if (reservaExistente) {
+      //   return res.status(400).json({ error: "o Horario ja esta Reservado!" });
+      // }
       //Se tive horario disponivel
       const novaReserva = await Reserva.createReserva(
         nome,
-        cpf,
-        email,
-        dataNascimento,
-        data,
-        horaInicio,
-        horaFim,
-        detalhes,
+        // cpf,
+        // email,
+        // dataNascimento,
+        dataInicio,
+        dataFim,
+        // detalhes,
         quadraId
       );
       res.status(201).json(novaReserva);
@@ -45,25 +43,19 @@ const reservaCtrl = {
     try {
       const listReservas = await Reserva.listarReservas();
 
-      const reservaFormatar = listReservas.map((reserva) =>
-        //console.log("data antes de formatar", reserva.data),
-        ({
-          id: reserva.id,
-          nome: reserva.nome,
-          cpf: Util.formatarCPF(reserva.cpf),
-          dataNascimento: Util.ajustarParaGMT3(reserva.dataNascimento),
-          email: reserva.email,
-          data: reserva.data,
-          horaInicio: reserva.horaInicio,
-          horaFim: reserva.horaFim,
-          // quadraId: reserva.quadraId,
-          quadra: {
-            ...reserva.quadra.toJSON(),
-            preco: Util.formatarValor(reserva.quadra.preco),
-          },
-        })
-      );
-      res.status(200).json(reservaFormatar);
+      // const reservaFormatar = listReservas.map((reserva) =>
+      //   //console.log("data antes de formatar", reserva.data),
+      //   ({
+      //     ...reserva,
+      //     cpf: Util.formatarCPF(reserva.cpf),
+
+      //     quadra: {
+      //       ...reserva.quadra.toJSON(),
+      //       preco: Util.formatarValor(reserva.quadra.preco),
+      //     },
+      //   })
+      // );
+      res.status(200).json(listReservas);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

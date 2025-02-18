@@ -1,29 +1,26 @@
 // src/App.jsx
-import { useState } from "react";
-import Sidebar from "./components/Sidebar";
-import AppointmentsView from "./components/AppointmentsView";
-import ReportsView from "./components/ReportsView";
+import React from "react";
+import { ThemeProvider } from "styled-components";
+import { lightTheme, darkTheme } from "./themes";
+import Sidebar from "./components/sidebar/Sidebar";
+import useSidebarStore from "./stores/sidebarStore";
 import Footer from "./components/Footer";
-import NewAppointmentModal from "./components/NewAppointmentModal";
+import ReservasPage from "./components/ReservasPage";
 
-function App() {
-  const [currentView, setCurrentView] = useState("appointments");
+const App = () => {
+  const { isDarkMode } = useSidebarStore();
 
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <Sidebar currentView={currentView} onViewChange={setCurrentView} />
-
-        <div className="col-md-10 py-5">
-          {currentView === "appointments" && <AppointmentsView />}
-          {currentView === "reports" && <ReportsView />}
-        </div>
+    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <div style={{ display: "flex" }}>
+        <Sidebar />
+        <main style={{ flex: 1, padding: "2rem" }}>
+          <ReservasPage />
+        </main>
       </div>
-
       <Footer />
-      <NewAppointmentModal />
-    </div>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;

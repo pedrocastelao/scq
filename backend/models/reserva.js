@@ -16,37 +16,33 @@ const Reserva = sequelize.define("reserva", {
   },
   cpf: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     validate: {
       isEmail: true, // Validação para garantir que o valor seja um e-mail válido
     },
   },
   dataNascimento: {
     type: DataTypes.DATEONLY,
+    allowNull: true,
+  },
+  dataInicio: {
+    type: DataTypes.DATE,
     allowNull: false,
   },
-  data: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
-  },
-  horaInicio: {
-    type: DataTypes.TIME,
-    allowNull: false,
-  },
-  horaFim: {
-    type: DataTypes.TIME,
+  dataFim: {
+    type: DataTypes.DATE,
     allowNull: false,
   },
   status: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     defaultValue: "Ativa", // Exemplo: status padrão como "Ativa"
     validate: {
-      isIn: [["Ativa", "Vencida", "Cancelada"]], // Validação para garantir valores válidos
+      isIn: [["ATIVA", "VENCIDA", "CANCELADA", "FUTURA"]], // Validação para garantir valores válidos
     },
   },
   detalhes: {
@@ -61,25 +57,23 @@ Reserva.belongsTo(Quadra);
 // Método para inserir uma nova reserva no banco de dados
 Reserva.createReserva = async function (
   nome,
-  cpf,
-  email,
-  dataNascimento,
-  data,
-  horaInicio,
-  horaFim,
-  detalhes,
+  // cpf,
+  // email,
+  // dataNascimento,
+  dataInicio,
+  dataFim,
+  // detalhes,
   quadraId
 ) {
   try {
     const reserva = await Reserva.create({
       nome,
-      cpf,
-      email,
-      dataNascimento,
-      data,
-      horaInicio,
-      horaFim,
-      detalhes,
+      // cpf,
+      // email,
+      // dataNascimento,
+      dataInicio,
+      dataFim,
+      // detalhes,
       quadraId,
     });
     return reserva;

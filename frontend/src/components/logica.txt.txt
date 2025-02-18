@@ -1,0 +1,13 @@
+Preciso que a lógica dos cards de reservas seja refatorada, considerando os seguintes pontos:
+
+1. Ajustes na Exibição das Informações
+Cada card deve exibir apenas as seguintes informações:
+Nome
+Data
+Hora de Início
+Hora de Fim
+2. Ordenação dos Dados
+Exibir os cadastros mais antigos primeiro (ordem crescente pela data de criação).
+3. Melhorias na Estrutura
+Código mais otimizado e organizado, garantindo eficiência na renderização.
+Melhor desempenho ao carregar e atualizar os dados.
