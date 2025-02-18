@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Agendamentos</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <!-- <style>
+      .appointment-card {
+        transition: transform 0.2s;
+      }
+
+      .appointment-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .card.current-week {
+        border-left: 4px solid #198754;
+      }
+
+      .card.future-week {
+        border-left: 4px solid #fd7e14;
+      }
+
+      .card.expired {
+        border-left: 4px solid #dc3545;
+      }
+
+      .status-indicator {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+      }
+
+      .status-current {
+        background-color: #198754;
+      }
+      .status-future {
+        background-color: #fd7e14;
+      }
+      .status-expired {
+        background-color: #dc3545;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-right: 1px solid #dee2e6;
+      }
+
+      .menu-item {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .menu-item:hover {
+        background-color: #e9ecef;
+      }
+
+      .active-menu {
+        background-color: #0d6efd;
+        color: white;
+      }
+
+      .week-navigator {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 20px;
+      }
+
+      .pagination {
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      footer {
+        position: relative;
+        bottom: 0;
+        width: 100%;
+        border-top: 1px solid #dee2e6;
+      }
+
+      footer a {
+        color: #0d6efd;
+      }
+
+      footer a:hover {
+        color: #0a58ca;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-right: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-profile {
+        margin-top: auto;
+        padding-top: 20px;
+      }
+
+      .user-profile hr {
+        margin: 15px 0;
+        opacity: 0.2;
+      }
+    </style> -->
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar Menu -->
+        <div class="col-md-2 sidebar">
+          <h4 class="mb-4">Menu</h4>
+          <div class="menu-item active-menu" onclick="showView('appointments')">
+            <i class="bi bi-calendar-check"></i> Agendamentos
+          </div>
+          <div class="menu-item" onclick="showView('reports')">
+            <i class="bi bi-file-earmark-text"></i> Relatórios
+          </div>
+          <!-- Adicionar esta parte - Perfil do Usuário -->
+          <div class="user-profile mt-auto">
+            <hr class="my-3" />
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-person-circle fs-4 me-2"></i>
+              <div>
+                <div class="fw-bold">João Silva</div>
+                <small class="text-muted">Administrador</small>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button
+                class="btn btn-sm btn-outline-primary"
+                onclick="changePassword()"
+              >
+                <i class="bi bi-key"></i> Senha
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> Sair
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5">
+          <!-- Agendamentos View -->
+          <div id="appointments-view">
+            <h1 class="text-center mb-4">Meus Agendamentos</h1>
+
+            <!-- Legenda -->
+            <div class="mb-4 text-center">
+              <div class="legend-item">
+                <span class="status-indicator status-current"></span>
+                <span>Semana Atual</span>
+              </div>
+              <div class="legend-item">
+                <span class="status-indicator status-future"></span>
+                <span>Semana Futura</span>
+              </div>
+              <div class="legend-item">
+                <span class="status-indicator status-expired"></span>
+                <span>Vencido</span>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-4">
+              <button
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#newAppointmentModal"
+              >
+                <i class="bi bi-plus-circle"></i> Novo Agendamento
+              </button>
+            </div>
+
+            <div class="mb-4">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="showExpired"
+                />
+                <label class="form-check-label" for="showExpired">
+                  Mostrar agendamentos vencidos
+                </label>
+              </div>
+            </div>
+
+            <!-- Navegador de Semanas -->
+            <div class="week-navigator mb-4">
+              <div class="row align-items-center">
+                <div class="col-md-4">
+                  <button
+                    class="btn btn-outline-primary"
+                    onclick="previousWeek()"
+                  >
+                    <i class="bi bi-chevron-left"></i> Semana Anterior
+                  </button>
+                </div>
+                <div class="col-md-4 text-center">
+                  <h5 class="mb-0" id="week-range"></h5>
+                </div>
+                <div class="col-md-4 text-end">
+                  <button class="btn btn-outline-primary" onclick="nextWeek()">
+                    Próxima Semana <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-md-12">
+                  <input
+                    type="week"
+                    class="form-control"
+                    id="week-selector"
+                    onchange="selectSpecificWeek(this.value)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row" id="appointments-container">
+              <!-- Cards serão inseridos aqui via JavaScript -->
+            </div>
+
+            <!-- Paginação -->
+            <nav aria-label="Navegação de páginas">
+              <ul class="pagination" id="pagination"></ul>
+            </nav>
+          </div>
+
+          <!-- Relatórios View -->
+          <div id="reports-view" style="display: none">
+            <h1 class="text-center mb-4">Relatórios</h1>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Relatório de Agendamentos</h5>
+                    <p class="card-text">
+                      Exportar relatório completo de agendamentos.
+                    </p>
+                    <div class="mb-3">
+                      <label class="form-label">Período</label>
+                      <div class="d-flex gap-2">
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="startDate"
+                        />
+                        <input type="date" class="form-control" id="endDate" />
+                      </div>
+                    </div>
+                    <button
+                      class="btn btn-primary"
+                      onclick="generateReport('appointments')"
+                    >
+                      <i class="bi bi-download"></i> Exportar PDF
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Relatório de Performance</h5>
+                    <p class="card-text">
+                      Exportar relatório de performance e estatísticas.
+                    </p>
+                    <div class="mb-3">
+                      <label class="form-label">Tipo de Relatório</label>
+                      <select class="form-select" id="reportType">
+                        <option value="daily">Diário</option>
+                        <option value="weekly">Semanal</option>
+                        <option value="monthly">Mensal</option>
+                      </select>
+                    </div>
+                    <button
+                      class="btn btn-primary"
+                      onclick="generateReport('performance')"
+                    >
+                      <i class="bi bi-download"></i> Exportar PDF
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer -->
+      <footer class="bg-light py-4 mt-5">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+              <p class="mb-0">
+                © 2024 - PC Desenvolvimentos. Todos os direitos reservados.
+              </p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+              <p class="mb-0">
+                <a
+                  href="https://wa.me/5518988220819"
+                  target="_blank"
+                  class="text-decoration-none"
+                >
+                  <i class="bi bi-whatsapp"></i> (18) 98822-0819
+                </a>
+                <span class="mx-2">|</span>
+                <a
+                  href="mailto:pedro.castelao@outlook.com.br"
+                  class="text-decoration-none"
+                >
+                  <i class="bi bi-envelope"></i> pedro.castelao@outlook.com.br
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <!-- <script>
+      const ITEMS_PER_PAGE = 9;
+      let currentPage = 1;
+      let currentWeekStart = new Date();
+      currentWeekStart.setHours(0, 0, 0, 0);
+      currentWeekStart.setDate(
+        currentWeekStart.getDate() - currentWeekStart.getDay()
+      );
+
+      // Dados de exemplo dos agendamentos
+      const appointments = [
+        {
+          id: 1,
+          client: "Maria Silva",
+          service: "Corte de Cabelo",
+          date: "2025-02-15",
+          time: "14:30",
+          endTime: "15:30",
+          status: "confirmed",
+          professional: "João Santos",
+        },
+      ];
+
+      function showView(viewName) {
+        // Oculta todas as views
+        document.getElementById("appointments-view").style.display = "none";
+        document.getElementById("reports-view").style.display = "none";
+
+        // Mostra a view selecionada
+        document.getElementById(`${viewName}-view`).style.display = "block";
+
+        // Atualiza o menu ativo
+        document.querySelectorAll(".menu-item").forEach((item) => {
+          item.classList.remove("active-menu");
+        });
+        event.currentTarget.classList.add("active-menu");
+
+        // Se for a view de agendamentos, atualiza a exibição
+        if (viewName === "appointments") {
+          updateWeekDisplay();
+          renderAppointments();
+        }
+      }
+
+      function getWeekRange(date) {
+        const start = new Date(date);
+        start.setDate(start.getDate() - start.getDay());
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        return { start, end };
+      }
+
+      function formatDateRange(start, end) {
+        const options = { day: "numeric", month: "short" };
+        return `${start.toLocaleDateString(
+          "pt-BR",
+          options
+        )} - ${end.toLocaleDateString("pt-BR", options)}`;
+      }
+
+      function updateWeekDisplay() {
+        const range = getWeekRange(currentWeekStart);
+        document.getElementById("week-range").textContent = formatDateRange(
+          range.start,
+          range.end
+        );
+
+        // Atualizar o seletor de semana
+        const weekSelector = document.getElementById("week-selector");
+        const year = range.start.getFullYear();
+        const week = getWeekNumber(range.start);
+        weekSelector.value = `${year}-W${week.toString().padStart(2, "0")}`;
+      }
+
+      function getWeekNumber(date) {
+        const d = new Date(
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+        );
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+      }
+
+      function previousWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        renderAppointments();
+        updateWeekDisplay();
+      }
+
+      function nextWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        renderAppointments();
+        updateWeekDisplay();
+      }
+
+      function selectSpecificWeek(weekString) {
+        const [year, week] = weekString.split("-W");
+        currentWeekStart = getDateOfWeek(parseInt(week), parseInt(year));
+        renderAppointments();
+        updateWeekDisplay();
+      }
+
+      function getDateOfWeek(week, year) {
+        const simple = new Date(year, 0, 1 + (week - 1) * 7);
+        const dow = simple.getDay();
+        const ISOweekStart = simple;
+        if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay());
+        else ISOweekStart.setDate(simple.getDate() + (7 - simple.getDay()));
+        return ISOweekStart;
+      }
+
+      function getAppointmentStatus(appointmentDate) {
+        const now = new Date();
+        const appointmentDateTime = new Date(appointmentDate);
+        const currentWeekRange = getWeekRange(new Date());
+
+        if (appointmentDateTime < now) {
+          return "expired";
+        } else if (
+          appointmentDateTime >= currentWeekRange.start &&
+          appointmentDateTime <= currentWeekRange.end
+        ) {
+          return "current-week";
+        } else {
+          return "future-week";
+        }
+      }
+
+      function filterAppointmentsByWeek(appointments) {
+        const weekRange = getWeekRange(currentWeekStart);
+        const showExpired = document.getElementById("showExpired").checked;
+
+        return appointments.filter((appointment) => {
+          const appointmentDate = new Date(appointment.date);
+          const isExpired = appointmentDate < new Date();
+
+          // Se não estiver marcado para mostrar vencidos, filtra eles fora
+          if (!showExpired && isExpired) {
+            return false;
+          }
+
+          // Se estiver marcado para mostrar vencidos, mostra apenas os vencidos
+          if (showExpired && !isExpired) {
+            return false;
+          }
+
+          return (
+            appointmentDate >= weekRange.start &&
+            appointmentDate <= weekRange.end
+          );
+        });
+      }
+
+      function renderAppointments() {
+        const container = document.getElementById("appointments-container");
+        const filteredAppointments = filterAppointmentsByWeek(appointments);
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        const pageAppointments = filteredAppointments.slice(
+          startIndex,
+          endIndex
+        );
+
+        container.innerHTML = "";
+
+        if (pageAppointments.length === 0) {
+          container.innerHTML = `
+                  <div class="col-12 text-center">
+                      <h3>Nenhum agendamento nesta semana</h3>
+                  </div>
+              `;
+          return;
+        }
+
+        pageAppointments.forEach((appointment) => {
+          const status = getAppointmentStatus(appointment.date);
+          const card = `
+                  <div class="col-md-4 mb-4">
+                      <div class="card appointment-card ${status}">
+                          <div class="card-body">
+                              <h5 class="card-title">${appointment.service}</h5>
+                              <h6 class="card-subtitle mb-2 text-muted">Cliente: ${
+                                appointment.client
+                              }</h6>
+                              <p class="card-text">
+                                  <strong>Data:</strong> ${new Date(
+                                    appointment.date
+                                  ).toLocaleDateString("pt-BR")}<br>
+                                  <strong>Horário:</strong> ${
+                                    appointment.time
+                                  } - ${appointment.endTime}<br>
+                                  <strong>Profissional:</strong> ${
+                                    appointment.professional
+                                  }
+                              </p>
+                              <div class="d-flex justify-content-end">
+                                  <button class="btn btn-sm btn-outline-primary me-2">Editar</button>
+                                  <button class="btn btn-sm btn-outline-danger">Cancelar</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              `;
+          container.innerHTML += card;
+        });
+
+        renderPagination(filteredAppointments.length);
+      }
+
+      function renderPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        const paginationElement = document.getElementById("pagination");
+        paginationElement.innerHTML = "";
+
+        if (totalItems <= ITEMS_PER_PAGE) return;
+
+        // Botão Anterior
+        paginationElement.innerHTML += `
+              <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                  <a class="page-link" href="#" onclick="changePage(${
+                    currentPage - 1
+                  })">Anterior</a>
+              </li>
+          `;
+
+        // Páginas
+        for (let i = 1; i <= totalPages; i++) {
+          paginationElement.innerHTML += `
+                  <li class="page-item ${currentPage === i ? "active" : ""}">
+                      <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                  </li>
+              `;
+        }
+
+        // Botão Próximo
+        paginationElement.innerHTML += `
+              <li class="page-item ${
+                currentPage === totalPages ? "disabled" : ""
+              }">
+                  <a class="page-link" href="#" onclick="changePage(${
+                    currentPage + 1
+                  })">Próximo</a>
+              </li>
+          `;
+      }
+
+      function changePage(page) {
+        currentPage = page;
+        renderAppointments();
+      }
+
+      function generateReport(type) {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const reportType = document.getElementById("reportType").value;
+
+        console.log(`Gerando relatório do tipo: ${type}`);
+        console.log(`Período: ${startDate} até ${endDate}`);
+        console.log(`Tipo de relatório: ${reportType}`);
+
+        alert("Relatório gerado com sucesso!");
+      }
+
+      function changePassword() {
+        // Aqui você pode adicionar a lógica para abrir um modal de alteração de senha
+        alert("Funcionalidade de alteração de senha será implementada aqui");
+      }
+
+      function logout() {
+        if (confirm("Deseja realmente sair do sistema?")) {
+          // Aqui você adiciona a lógica de logout
+          window.location.href = "login.html"; // ou sua página de login
+        }
+      }
+
+      // modal
+
+      // Inicialização
+      document.addEventListener("DOMContentLoaded", () => {
+        updateWeekDisplay();
+        renderAppointments();
+        // Adicionar o novo event listener aqui
+        document
+          .getElementById("showExpired")
+          .addEventListener("change", renderAppointments);
+      });
+    </script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <div class="modal fade" id="newAppointmentModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Novo Agendamento</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="newAppointmentForm">
+              <div class="mb-3">
+                <label class="form-label">Cliente</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="clientName"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Serviço</label>
+                <select class="form-select" id="serviceType" required>
+                  <option value="">Selecione um serviço</option>
+                  <option value="Corte de Cabelo">Corte de Cabelo</option>
+                  <option value="Barba">Barba</option>
+                  <option value="Corte e Barba">Corte e Barba</option>
+                  <!-- Adicione mais serviços conforme necessário -->
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Profissional</label>
+                <select class="form-select" id="professional" required>
+                  <option value="">Selecione um profissional</option>
+                  <option value="João Santos">João Santos</option>
+                  <option value="Carlos Mendes">Carlos Mendes</option>
+                  <!-- Adicione mais profissionais conforme necessário -->
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Data</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="appointmentDate"
+                  required
+                />
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Horário Início</label>
+                  <input
+                    type="time"
+                    class="form-control"
+                    id="startTime"
+                    required
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Horário Fim</label>
+                  <input
+                    type="time"
+                    class="form-control"
+                    id="endTime"
+                    required
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="saveAppointment()"
+            >
+              Salvar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

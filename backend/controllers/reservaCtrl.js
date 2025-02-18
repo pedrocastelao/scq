@@ -53,7 +53,7 @@ const reservaCtrl = {
           cpf: Util.formatarCPF(reserva.cpf),
           dataNascimento: Util.ajustarParaGMT3(reserva.dataNascimento),
           email: reserva.email,
-          data: Util.ajustarParaGMT3(reserva.data),
+          data: reserva.data,
           horaInicio: reserva.horaInicio,
           horaFim: reserva.horaFim,
           // quadraId: reserva.quadraId,
