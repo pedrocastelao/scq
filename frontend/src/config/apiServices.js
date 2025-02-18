@@ -5,7 +5,8 @@ export const newReserva = async (dadosReserva) => {
 };
 
 export const getReservas = async () => {
-  return await api.get(`/reservas`);
+  const respose = await api.get(`/reservas`);
+  return respose;
 };
 
 export const getQuadras = async () => {
