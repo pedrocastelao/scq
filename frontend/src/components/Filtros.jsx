@@ -23,11 +23,11 @@ const Checkbox = styled.label`
 const Filtros = ({ filtros, setFiltros }) => {
   return (
     <FiltrosContainer>
-      <Input
+      {/* <Input
         type="date"
         value={filtros.data || ""}
         onChange={(e) => setFiltros({ ...filtros, data: e.target.value })}
-      />
+      /> */}
       <Checkbox>
         <input
           type="checkbox"

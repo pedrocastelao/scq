@@ -1,5 +1,135 @@
+const Quadra = require("../models/quadra");
 const Reserva = require("../models/reserva");
-const { Util } = require("../config/util");
+const moment = require("moment");
+const cron = require("node-cron");
+
+// Função para atualizar o status das reservas
+const atualizarStatusReservas = async () => {
+  try {
+    // Obter todas as reservas
+    const reservas = await Reserva.findAll();
+
+    // Data e hora atuais
+    const dataAtual = moment(); // Inclui a data e hora atuais
+
+    // Iterar sobre todas as reservas
+    for (let reserva of reservas) {
+      const dataReserva = moment(reserva.dataFim); // A data do evento, incluindo hora
+
+      // Verificar se a data e hora da reserva já passaram
+      if (dataReserva.isBefore(dataAtual)) {
+        // Atualizar status para "VENCIDA"
+        await reserva.update({
+          status: "VENCIDA",
+        });
+
+        console.log(`Reserva com ID ${reserva.id} atualizada para VENCIDA.`);
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar status das reservas:", error);
+  }
+};
+
+// Agendar a tarefa para ser executada a cada hora
+cron.schedule("0 * * * *", () => {
+  console.log("Executando verificação de status das reservas...");
+  atualizarStatusReservas();
+});
+
+// Definir fuso horário para garantir consistência
+const TIMEZONE = "America/Sao_Paulo";
+
+// Horários permitidos para reservas (configuráveis)
+let HORARIO_INICIO = moment.tz("08:00", "HH:mm", TIMEZONE);
+let HORARIO_FIM = moment.tz("20:00", "HH:mm", TIMEZONE);
+
+// Função para validar a reserva
+const validarReserva = (dataInicio, dataFim) => {
+  // Garantir que as datas sejam interpretadas corretamente com o fuso horário
+  const inicioReserva = moment.tz(dataInicio, TIMEZONE);
+  const fimReserva = moment.tz(dataFim, TIMEZONE);
+  const hoje = moment.tz(TIMEZONE).startOf("day"); // A data de hoje, sem hora
+
+  // 1. Verifica se a data de início e fim são a mesma
+  if (!inicioReserva.isSame(fimReserva, "day")) {
+    return {
+      valido: false,
+      mensagem: "A data de início e fim da reserva devem ser as mesmas.",
+    };
+  }
+
+  // 2. Verifica se a reserva não é para o passado
+  if (inicioReserva.isBefore(hoje, "day")) {
+    return {
+      valido: false,
+      mensagem: "Não é permitido fazer reservas para datas passadas.",
+    };
+  }
+
+  // 3. Verifica se o horário de início e fim estão dentro do intervalo permitido
+  const horaInicio = inicioReserva.format("HH:mm");
+  const horaFim = fimReserva.format("HH:mm");
+
+  const horaInicioMoment = moment.tz(horaInicio, "HH:mm", TIMEZONE);
+  const horaFimMoment = moment.tz(horaFim, "HH:mm", TIMEZONE);
+
+  // Verifica se o horário de início e fim estão dentro do horário permitido
+  if (
+    !horaInicioMoment.isBetween(HORARIO_INICIO, HORARIO_FIM, null, "[)") ||
+    !horaFimMoment.isBetween(HORARIO_INICIO, HORARIO_FIM, null, "[)")
+  ) {
+    return {
+      valido: false,
+      mensagem: `O horário permitido para reservas é entre ${HORARIO_INICIO.format(
+        "HH:mm"
+      )} e ${HORARIO_FIM.format("HH:mm")}.`,
+    };
+  }
+
+  return { valido: true };
+};
+
+// Função para calcular o status da reserva
+const calcularStatusReserva = (dataEvento, statusAlterado) => {
+  // Data atual no fuso horário configurado
+  const dataAtual = moment.tz(TIMEZONE);
+
+  // Primeira e última data da semana atual (considerando a segunda-feira como primeiro dia da semana)
+  const inicioSemana = dataAtual.clone().startOf("week"); // Segunda-feira
+  const fimSemana = dataAtual.clone().endOf("week"); // Domingo
+
+  // Converter a data do evento para o fuso horário configurado
+  const dataEventoMoment = moment.tz(dataEvento, TIMEZONE);
+
+  // Caso o status tenha sido alterado manualmente para "CANCELADA"
+  if (statusAlterado === "CANCELADA") {
+    return "CANCELADA";
+  }
+
+  // Verifica se a data do evento é mais de 7 dias à frente ou não está dentro da semana atual
+  if (
+    dataEventoMoment.isAfter(dataAtual.add(7, "days")) ||
+    !dataEventoMoment.isBetween(inicioSemana, fimSemana, null, "[]")
+  ) {
+    return "FUTURA";
+  }
+
+  // Verifica se a data do evento é dentro da semana atual
+  if (dataEventoMoment.isBetween(inicioSemana, fimSemana, null, "[]")) {
+    return "ATIVA";
+  }
+
+  // Se o evento já passou, mas não está na semana atual
+  if (
+    dataEventoMoment.isBefore(dataAtual) &&
+    !dataEventoMoment.isBetween(inicioSemana, fimSemana, null, "[]")
+  ) {
+    return "VENCIDA";
+  }
+
+  return "STATUS INDEFINIDO";
+};
 
 const reservaCtrl = {
   newReserva: async (req, res) => {
@@ -11,19 +141,22 @@ const reservaCtrl = {
       dataInicio,
       dataFim,
       // detalhes,
+      status,
       quadraId,
     } = req.body;
 
-    try {
-      // const reservaExistente = await Reserva.findOne({
-      //   where: { data: data, quadraId: quadraId, horaInicio: horaInicio },
-      // });
+    // Validação antes de criar a reserva
+    const validacao = validarReserva(dataInicio, dataFim);
+    if (!validacao.valido) {
+      return res.status(400).json({ error: validacao.mensagem });
+    }
 
-      // if (reservaExistente) {
-      //   return res.status(400).json({ error: "o Horario ja esta Reservado!" });
-      // }
-      //Se tive horario disponivel
-      const novaReserva = await Reserva.createReserva(
+    const statusReserva = calcularStatusReserva(dataInicio, status);
+
+    console.log(statusReserva);
+
+    try {
+      const novaReserva = await Reserva.create({
         nome,
         // cpf,
         // email,
@@ -31,8 +164,9 @@ const reservaCtrl = {
         dataInicio,
         dataFim,
         // detalhes,
-        quadraId
-      );
+        status: statusReserva,
+        quadraId,
+      });
       res.status(201).json(novaReserva);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -41,20 +175,14 @@ const reservaCtrl = {
 
   getAllReservas: async (req, res) => {
     try {
-      const listReservas = await Reserva.listarReservas();
-
-      // const reservaFormatar = listReservas.map((reserva) =>
-      //   //console.log("data antes de formatar", reserva.data),
-      //   ({
-      //     ...reserva,
-      //     cpf: Util.formatarCPF(reserva.cpf),
-
-      //     quadra: {
-      //       ...reserva.quadra.toJSON(),
-      //       preco: Util.formatarValor(reserva.quadra.preco),
-      //     },
-      //   })
-      // );
+      const listReservas = await Reserva.findAll({
+        include: [
+          {
+            model: Quadra, // Incluir os dados da quadra associada
+            attributes: ["tipo", "localizacao", "preco"], // Selecionar os atributos desejados da quadra
+          },
+        ],
+      });
       res.status(200).json(listReservas);
     } catch (error) {
       res.status(500).json({ error: error.message });
