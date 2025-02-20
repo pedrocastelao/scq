@@ -66,7 +66,7 @@ const ReservaCard = ({ reserva }) => {
       <Nome>{reserva.nome}</Nome>
       <Info>Início: {formatarData(reserva.dataInicio)}</Info>
       <Info>Fim: {formatarData(reserva.dataFim)}</Info>
-      <Info>Local: {reserva.quadra.tipo}</Info>
+      <Info>Local: {reserva.quadra.localizacao}</Info>
       <Status status={reserva.status}>{reserva.status}</Status>
     </Card>
   );
