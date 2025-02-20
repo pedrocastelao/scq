@@ -9,6 +9,10 @@ const User = sequelize.define("User", {
     defaultValue: () => uuidv4(), // Gera um UUID padrão ao criar um novo registro
     primaryKey: true,
   },
+  nome:{
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -31,10 +35,10 @@ User.beforeCreate(async (user) => {
 
 User.sync({ force: false })
   .then(() => {
-    console.log("{Models} Modelo User sincronizado com o banco de dados.");
+    console.log("User sincronizado com o banco de dados.");
   })
   .catch((error) => {
-    console.error("{Models} Erro ao sincronizar o modelo User:", error);
+    console.error("Erro ao sincronizar o modelo User:", error);
   });
 
 module.exports = User;

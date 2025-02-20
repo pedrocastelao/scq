@@ -13,6 +13,10 @@ export const getQuadras = async () => {
   return await api.get(`/quadras`);
 };
 
-export const getHorarios = async (dataInicio, dataFim) => {
-  return await api.get(`/reserva/horarios/${dataInicio}/${dataFim}`);
+export const newUsers = async (dadosUser) => {
+  return await api.post(`/user/novo`, dadosUser);
+};
+
+export const authenticateUser = async (email, password) => {
+  return await api.post(`/login`, { email, password });
 };

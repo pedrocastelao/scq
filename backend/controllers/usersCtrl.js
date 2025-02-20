@@ -3,10 +3,11 @@ const User = require("../models/users.js");
 // Função para cadastrar um usuário
 const userCtrl = {
   cadastrarUserController: async (req, res) => {
-    const { email, password } = req.body;
+    const { nome, email, password } = req.body;
 
     try {
       const novoUser = await User.create({
+        nome,
         email,
         password,
       });

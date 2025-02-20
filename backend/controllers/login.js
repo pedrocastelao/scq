@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-
 const Users = require("../models/users");
 const bcrypt = require("bcryptjs");
 
@@ -7,11 +6,12 @@ const Login = {
   verificarLogin: async (req, res) => {
     const { email, password } = req.body;
 
-    console.log(email, password);
+    // console.log("chegou aqui", email, password);
 
     try {
       // Busque o usuário no banco de dados pelo email
       const user = await Users.findOne({ where: { email: email } });
+      // console.log(user);
 
       if (!user) {
         // Se o usuário não foi encontrado, envie uma resposta de erro genérica
@@ -34,11 +34,8 @@ const Login = {
 
       // Defina as informações do usuário e o token na resposta
       res.json({
-        user: {
-          id: user.id,
-          nome: user.nome,
-        },
-        token: token,
+        user,
+        token,
       });
     } catch (error) {
       // Capture e registre qualquer erro ocorrido durante o processo

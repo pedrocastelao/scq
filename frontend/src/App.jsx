@@ -1,25 +1,44 @@
 // src/App.jsx
 import React from "react";
-import { ThemeProvider } from "styled-components";
-import { lightTheme, darkTheme } from "./themes";
-import Sidebar from "./components/sidebar/Sidebar";
-import useSidebarStore from "./stores/sidebarStore";
-import Footer from "./components/Footer";
-import ReservasPage from "./components/ReservasPage";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import AuthenticatedLayout from "./layouts/AuthenticatedLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LoginScreen from "./components/LoginScreen";
+import NotFoundPage from "./components/NotFoundPage";
+import { routes } from "./routes/routeConfig";
 
 const App = () => {
-  const { isDarkMode } = useSidebarStore();
-
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <div style={{ display: "flex" }}>
-        <Sidebar />
-        <main style={{ flex: 1, padding: "2rem" }}>
-          <ReservasPage />
-        </main>
-      </div>
-      <Footer />
-    </ThemeProvider>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<LoginScreen />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedLayout />
+              </ProtectedRoute>
+            }
+          >
+            {/* Default redirect */}
+            <Route index element={<Navigate to="/reservas" replace />} />
+
+            {/* Dynamic routes from configuration */}
+            {routes.map(({ path, element: Element }) => (
+              <Route key={path} path={path} element={<Element />} />
+            ))}
+
+            {/* 404 page */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 };
 

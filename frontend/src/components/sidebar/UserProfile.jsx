@@ -1,7 +1,9 @@
 // src/components/Sidebar/UserProfile.jsx
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { User, Key, LogOut } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ProfileContainer = styled.div`
   padding-top: 1rem;
@@ -37,33 +39,98 @@ const ActionButton = styled.button`
   }
 `;
 
+const UserAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.sidebar.avatarBackground};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+`;
+
+const UserDetails = styled.div`
+  margin-left: 0.75rem;
+  overflow: hidden;
+`;
+
+const UserName = styled.div`
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const UserRole = styled.small`
+  color: ${({ theme }) => theme.sidebar.textSecondary};
+  display: block;
+`;
+
 const UserProfile = ({ isCollapsed }) => {
-  const handleLogout = () => {
-    // Implementar lógica de logout
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout(); // Call the logout function from AuthContext
+      navigate("/login"); // Redirect to login page
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const handleChangePassword = () => {
     // Implementar lógica de alteração de senha
+    navigate("/change-password");
   };
 
   return (
     <ProfileContainer>
       <UserInfo isCollapsed={isCollapsed}>
-        <User size={24} />
-        <div style={{ marginLeft: "0.75rem" }}>
-          <div style={{ fontWeight: "bold" }}>João Silva</div>
-          <small>Administrador</small>
-        </div>
+        <UserAvatar>
+          {user?.avatar ? (
+            <img src={user.avatar} alt={user.nome} />
+          ) : (
+            <User size={24} />
+          )}
+        </UserAvatar>
+        <UserDetails>
+          <UserName>{user?.nome || "Usuário"}</UserName>
+          <UserRole>{user?.role || "Sem cargo"}</UserRole>
+        </UserDetails>
       </UserInfo>
 
       <UserActions isCollapsed={isCollapsed}>
-        <ActionButton onClick={handleChangePassword}>
+        <ActionButton
+          onClick={handleChangePassword}
+          disabled={isLoggingOut}
+          title="Alterar senha"
+        >
           <Key size={16} />
           {!isCollapsed && <span style={{ marginLeft: "0.5rem" }}>Senha</span>}
         </ActionButton>
-        <ActionButton onClick={handleLogout}>
+        <ActionButton
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          title="Sair"
+        >
           <LogOut size={16} />
-          {!isCollapsed && <span style={{ marginLeft: "0.5rem" }}>Sair</span>}
+          {!isCollapsed && (
+            <span style={{ marginLeft: "0.5rem" }}>
+              {isLoggingOut ? "Saindo..." : "Sair"}
+            </span>
+          )}
         </ActionButton>
       </UserActions>
     </ProfileContainer>
