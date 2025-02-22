@@ -73,7 +73,12 @@ const CardsGrid = styled.div`
   margin-top: 20px;
 `;
 
-const WeekView = ({ currentDate, onWeekChange, reservasPaginadas }) => {
+const WeekView = ({
+  currentDate,
+  onWeekChange,
+  reservasPaginadas,
+  setIsModalOpen,
+}) => {
   const handlePreviousWeek = () => {
     onWeekChange(subWeeks(currentDate, 1));
   };
@@ -135,8 +140,12 @@ const WeekView = ({ currentDate, onWeekChange, reservasPaginadas }) => {
       </WeekViewContainer>
 
       <CardsGrid>
-        {reservasPaginadas.map((reserva) => (
-          <ReservaCard key={reserva.id} reserva={reserva} />
+        {reservasPaginadas.map((reserva, index) => (
+          <ReservaCard
+            key={reserva ? reserva.id : `new-reservation-${index}`}
+            reserva={reserva}
+            onNovaReserva={() => setIsModalOpen(true)}
+          />
         ))}
       </CardsGrid>
     </>

@@ -56,7 +56,46 @@ const Status = styled.span`
   }};
 `;
 
-const ReservaCard = ({ reserva }) => {
+const NovaReservaCard = styled(Card)`
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+`;
+
+const AddIcon = styled.div`
+  font-size: 40px;
+  color: #007bff;
+  margin-bottom: 10px;
+`;
+
+const AddText = styled.p`
+  color: #007bff;
+  font-weight: 500;
+  margin: 0;
+`;
+
+const ReservaCard = ({ reserva, onNovaReserva }) => {
+  
+  if (!reserva) {
+    return (
+      <NovaReservaCard onClick={onNovaReserva}>
+        <AddIcon>+</AddIcon>
+        <AddText>Nova Reserva</AddText>
+      </NovaReservaCard>
+    );
+  }
+
   const formatarData = (data) => {
     return new Date(data).toLocaleString("pt-BR");
   };

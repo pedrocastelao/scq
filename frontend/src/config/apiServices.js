@@ -1,6 +1,6 @@
 import api from "./axiosConfig";
 
-export const newReserva = async (dadosReserva) => {
+export const createReserva = async (dadosReserva) => {
   return await api.post(`/reserva/nova`, dadosReserva);
 };
 

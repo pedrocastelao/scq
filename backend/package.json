@@ -12,6 +12,7 @@
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
     "libphonenumber-js": "^1.10.58",
+    "mongodb": "^6.13.1",
     "mysql2": "^3.9.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.11",

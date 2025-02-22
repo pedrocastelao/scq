@@ -26,7 +26,7 @@ const App = () => {
             }
           >
             {/* Default redirect */}
-            <Route index element={<Navigate to="/reservas" replace />} />
+            <Route index element={<Navigate to="/login" replace />} />
 
             {/* Dynamic routes from configuration */}
             {routes.map(({ path, element: Element }) => (
