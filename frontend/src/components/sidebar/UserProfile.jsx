@@ -27,7 +27,7 @@ const UserActions = styled.div`
 const ActionButton = styled.button`
   display: flex;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.4rem;
   border: 1px solid ${({ theme }) => theme.sidebar.border};
   border-radius: 4px;
   background: transparent;
@@ -117,7 +117,7 @@ const UserProfile = ({ isCollapsed }) => {
           disabled={isLoggingOut}
           title="Alterar senha"
         >
-          <Key size={16} />
+          <Key size={13} />
           {!isCollapsed && <span style={{ marginLeft: "0.5rem" }}>Senha</span>}
         </ActionButton>
         <ActionButton
@@ -125,7 +125,7 @@ const UserProfile = ({ isCollapsed }) => {
           disabled={isLoggingOut}
           title="Sair"
         >
-          <LogOut size={16} />
+          <LogOut size={13} />
           {!isCollapsed && (
             <span style={{ marginLeft: "0.5rem" }}>
               {isLoggingOut ? "Saindo..." : "Sair"}

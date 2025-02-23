@@ -5,18 +5,19 @@ import styled from "styled-components";
 const LegendaContainer = styled.div`
   display: flex;
   gap: 16px;
-  margin-bottom: 20px;
+  align-items: center;
 `;
 
 const LegendaItem = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.9rem; // Optional: make legend text slightly smaller
 `;
 
 const StatusDot = styled.span`
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background-color: ${(props) => props.color};
 `;

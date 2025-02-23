@@ -104,7 +104,6 @@ const ReservasPage = () => {
   return (
     <ReservasContainer>
       <ReservationTitle />
-      <Legenda />
       <Filtros filtros={filtros} setFiltros={setFiltros} />
       <WeekView
         currentDate={currentDate}

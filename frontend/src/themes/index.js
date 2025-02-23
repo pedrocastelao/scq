@@ -19,4 +19,11 @@ export const darkTheme = {
     hoverBackground: "#374151",
     border: "#374151",
   },
+
+  footer: {
+    background: "#f8f9fa",
+    text: "#333333",
+    link: "#666666",
+    linkHover: "#000000",
+  },
 };
