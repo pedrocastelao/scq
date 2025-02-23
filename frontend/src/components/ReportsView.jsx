@@ -1,7 +1,7 @@
 // src/components/ReportsView.jsx
 function ReportsView() {
   const generateReport = (type) => {
-    console.log(`Generating ${type} report`);
+    // console.log(`Generating ${type} report`);
   };
 
   return (

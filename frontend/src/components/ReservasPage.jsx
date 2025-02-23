@@ -1,7 +1,6 @@
 // ReservasPage.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
-import ReservaCard from "./ReservaCard";
 import Filtros from "./Filtros";
 import Legenda from "./Legenda";
 import Paginacao from "./Paginacao";
@@ -17,50 +16,6 @@ const ReservasContainer = styled.div`
   margin: 0 auto;
 `;
 
-const Modal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: 24px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #666;
-`;
-
-// const CardsGrid = styled.div`
-//   display: grid;
-//   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-//   gap: 20px;
-//   margin: 20px 0;
-// `;
-
 const ReservasPage = () => {
   const [reservas, setReservas] = useState([]); // Inicializa com uma lista vazia
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,9 +27,7 @@ const ReservasPage = () => {
     mostrarCanceladas: false,
   });
 
-  const itensPorPagina = 9;
-
-  const [filtrosAplicados, setFiltrosAplicados] = useState(false);
+  const itensPorPagina = 8;
 
   useEffect(() => {
     // Função para buscar as reservas do backend
@@ -89,11 +42,6 @@ const ReservasPage = () => {
 
     fetchReservas();
   }, []);
-
-  // // Para exibir os cards
-  // const indiceInicial = (paginaAtual - 1) * 9;
-  // const indiceFinal = indiceInicial + 9;
-  // const cardsAtuais = reservas.slice(indiceInicial, indiceFinal);
 
   // Filtra as reservas da semana atual
   const reservasDaSemana = useMemo(() => {
@@ -124,18 +72,16 @@ const ReservasPage = () => {
     setPaginaAtual(1); // Reset da paginação ao mudar de semana
   };
 
-  const handleNovaReserva = () => {
-    setIsModalOpen(true);
-  };
-
   const handleSubmitReserva = async (reservaData) => {
+    // console.log(reservaData);
+
     try {
-      const response = await createReserva(reservaData);
-      // Adiciona a nova reserva ao estado local
-      setReservas(prevReservas => [...prevReservas, response.data]);
+      await createReserva(reservaData);
+      const response = await getReservas();
+      setReservas(response.data);
       setIsModalOpen(false);
       // Refresh reservas list
-      getReservas();
+      // await getReservas();
     } catch (error) {
       console.error("Erro ao criar reserva:", error);
     }

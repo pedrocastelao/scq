@@ -86,13 +86,13 @@ const AddText = styled.p`
 `;
 
 const ReservaCard = ({ reserva, onNovaReserva }) => {
-  
   if (!reserva) {
     return (
       <NovaReservaCard onClick={onNovaReserva}>
         <AddIcon>+</AddIcon>
         <AddText>Nova Reserva</AddText>
       </NovaReservaCard>
+      
     );
   }
 
@@ -105,7 +105,7 @@ const ReservaCard = ({ reserva, onNovaReserva }) => {
       <Nome>{reserva.nome}</Nome>
       <Info>Início: {formatarData(reserva.dataInicio)}</Info>
       <Info>Fim: {formatarData(reserva.dataFim)}</Info>
-      <Info>Local: {reserva.quadra.localizacao}</Info>
+      <Info>Local: {reserva.quadra?.localizacao ?? "N/A"}</Info>
       <Status status={reserva.status}>{reserva.status}</Status>
     </Card>
   );

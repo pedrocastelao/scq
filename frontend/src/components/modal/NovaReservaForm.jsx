@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { getQuadras } from "../../config/apiServices";
-import { format, setHours, setMinutes, isAfter, isSameDay } from "date-fns";
-
-// Styled components from previous response...
-// (FormContainer, FormGroup, Label, Input, Select, SubmitButton)
+import { format, isAfter, isSameDay } from "date-fns";
 
 const FormContainer = styled.form`
   display: flex;
@@ -82,6 +79,8 @@ const NovaReservaForm = ({ onClose, onSubmit }) => {
     const fetchQuadras = async () => {
       try {
         const response = await getQuadras();
+        // console.log(response.data);
+
         setQuadras(response.data);
       } catch (error) {
         console.error("Erro ao buscar quadras:", error);
@@ -162,7 +161,6 @@ const NovaReservaForm = ({ onClose, onSubmit }) => {
       quadraId: formData.quadraId,
       status: "FUTURA",
     };
-
     onSubmit(reservaData);
   };
 

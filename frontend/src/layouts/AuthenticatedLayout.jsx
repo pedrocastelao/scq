@@ -29,7 +29,7 @@ const AuthenticatedLayout = () => {
   const { isDarkMode } = useSidebarStore();
 
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={isDarkMode ? darkTheme : darkTheme}>
       <LayoutContainer>
         <MainContent>
           <Sidebar />

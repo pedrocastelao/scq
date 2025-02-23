@@ -68,7 +68,7 @@ const AnimatedContent = styled.div`
 
 const Paginacao = ({
   totalItems,
-  itensPorPagina = 9,
+  itensPorPagina = 8,
   paginaAtual,
   setPaginaAtual,
   onFiltroAplicado,
@@ -132,7 +132,7 @@ const Paginacao = ({
         </Pagination>
       </AnimatedContent>
 
-      <SelectContainer>
+      {/* <SelectContainer>
         <span>Ir para página:</span>
         <PageSelect
           value={paginaAtual}
@@ -144,7 +144,7 @@ const Paginacao = ({
             </option>
           ))}
         </PageSelect>
-      </SelectContainer>
+      </SelectContainer> */}
     </PaginacaoContainer>
   );
 };

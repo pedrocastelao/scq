@@ -1,5 +1,6 @@
 // src/components/Sidebar/SidebarMenu.jsx
 import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { Calendar, FileText, Users, Settings } from "lucide-react";
 import useSidebarStore from "../../stores/sidebarStore";
@@ -7,7 +8,9 @@ import useSidebarStore from "../../stores/sidebarStore";
 const MenuItem = styled.div`
   display: flex;
   align-items: center;
-  padding: 0.75rem 1rem;
+  justify-content: ${({ isCollapsed }) =>
+    isCollapsed ? "center" : "flex-start"};
+  padding: 0.75rem ${({ isCollapsed }) => (isCollapsed ? "0.5rem" : "1rem")};
   cursor: pointer;
   border-radius: 4px;
   margin-bottom: 0.5rem;
@@ -24,16 +27,26 @@ const MenuItem = styled.div`
 const MenuText = styled.span`
   margin-left: 0.75rem;
   display: ${({ isCollapsed }) => (isCollapsed ? "none" : "block")};
+  white-space: nowrap;
+`;
+
+const IconWrapper = styled.div`
+  min-width: ${({ isCollapsed }) => (isCollapsed ? "auto" : "20px")};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const menuItems = [
   {
-    id: "appointments",
+    id: "reservas", // Alterado para match com as rotas
+    path: "/reservas", // Adicionado path
     icon: <Calendar size={20} />,
     label: "Agendamentos",
   },
   {
-    id: "reports",
+    id: "relatorios", // Alterado para match com as rotas
+    path: "/relatorios", // Adicionado path
     icon: <FileText size={20} />,
     label: "Relatórios",
   },
@@ -50,17 +63,25 @@ const menuItems = [
 ];
 
 const SidebarMenu = ({ isCollapsed }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentView, setCurrentView } = useSidebarStore();
+
+  const handleMenuClick = (path, id) => {
+    setCurrentView(id);
+    navigate(path);
+  };
 
   return (
     <div>
       {menuItems.map((item) => (
         <MenuItem
           key={item.id}
-          active={currentView === item.id}
-          onClick={() => setCurrentView(item.id)}
+          active={location.pathname === item.path}
+          onClick={() => handleMenuClick(item.path, item.id)}
+          isCollapsed={isCollapsed}
         >
-          {item.icon}
+          <IconWrapper isCollapsed={isCollapsed}>{item.icon}</IconWrapper>
           <MenuText isCollapsed={isCollapsed}>{item.label}</MenuText>
         </MenuItem>
       ))}

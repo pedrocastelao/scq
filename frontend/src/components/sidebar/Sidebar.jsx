@@ -1,7 +1,7 @@
 // src/components/Sidebar/Sidebar.jsx
 import React from "react";
 import styled from "styled-components";
-import { Menu, ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
+import {ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
 import useSidebarStore from "../../stores/sidebarStore";
 import SidebarMenu from "./SidebarMenu";
 import UserProfile from "./UserProfile";
@@ -63,9 +63,9 @@ const Sidebar = () => {
       <SidebarMenu isCollapsed={isCollapsed} />
 
       <div style={{ marginTop: "auto" }}>
-        <ControlButton onClick={toggleDarkMode}>
+        {/* <ControlButton onClick={toggleDarkMode}>
           {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-        </ControlButton>
+        </ControlButton> */}
         <UserProfile isCollapsed={isCollapsed} />
       </div>
     </SidebarContainer>

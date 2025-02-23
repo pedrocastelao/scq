@@ -167,7 +167,17 @@ const reservaCtrl = {
         status: statusReserva,
         quadraId,
       });
-      res.status(201).json(novaReserva);
+
+      const reservaCompleta = await Reserva.findByPk(novaReserva.id, {
+        include: [
+          {
+            model: Quadra,
+            attributes: ["tipo", "localizacao", "preco"],
+          },
+        ],
+      });
+
+      res.status(201).json(reservaCompleta);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -176,6 +186,7 @@ const reservaCtrl = {
   getAllReservas: async (req, res) => {
     try {
       const listReservas = await Reserva.findAll({
+        order: [["dataInicio", "ASC"]],
         include: [
           {
             model: Quadra, // Incluir os dados da quadra associada
