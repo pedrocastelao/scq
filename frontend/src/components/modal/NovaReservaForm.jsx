@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { getQuadras } from "../../config/apiServices";
+import { quadrasService } from "../../hooks/apiServices";
 import { format, isAfter, isSameDay } from "date-fns";
 
 const FormContainer = styled.form`
@@ -63,6 +63,7 @@ const SubmitButton = styled.button`
 `;
 
 const NovaReservaForm = ({ onClose, onSubmit }) => {
+  const { getQuadras } = quadrasService;
   const [formData, setFormData] = useState({
     nome: "",
     dataInicio: format(new Date(), "yyyy-MM-dd"),
@@ -97,12 +98,15 @@ const NovaReservaForm = ({ onClose, onSubmit }) => {
     const today = format(now, "yyyy-MM-dd");
     const isToday = formData.dataInicio === today;
 
-    for (let i = 6; i <= 22; i++) {
+    for (let i = 8; i <= 22; i++) {
       const hora = `${i.toString().padStart(2, "0")}:00`;
 
       if (isHoraFim) {
-        // Para hora fim, só mostrar horários depois da hora início
+        // Para hora fim, só mostrar horários depois da hora início e no máximo 2h depois
         if (hora <= horaInicio) continue;
+
+        const horaInicioNum = parseInt(horaInicio.split(":")[0]);
+        if (i > horaInicioNum + 2) continue; // Limita a 2h após hora início
       } else if (isToday) {
         // Para hora início hoje, só mostrar horários futuros
         const horaAtual = now.getHours();

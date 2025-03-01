@@ -37,7 +37,7 @@ const AuthenticatedLayout = () => {
             <Outlet />
           </PageContent>
         </MainContent>
-        <Footer />
+        {/* <Footer /> */}
       </LayoutContainer>
     </ThemeProvider>
   );

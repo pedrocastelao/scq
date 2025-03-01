@@ -2,9 +2,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import Filtros from "./Filtros";
-import Legenda from "./Legenda";
 import Paginacao from "./Paginacao";
-import { createReserva, getReservas } from "../config/apiServices";
+import { reservaService } from "../hooks/apiServices";
 import ReservationTitle from "./ReservationTitle";
 import WeekView from "./WeekView";
 import { parseISO, isSameWeek } from "date-fns";
@@ -17,6 +16,7 @@ const ReservasContainer = styled.div`
 `;
 
 const ReservasPage = () => {
+  const { getReservas, createReserva } = reservaService;
   const [reservas, setReservas] = useState([]); // Inicializa com uma lista vazia
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
