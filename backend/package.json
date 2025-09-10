@@ -28,5 +28,8 @@
     "dev": "nodemon",
     "start": "nodemon index.js"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }

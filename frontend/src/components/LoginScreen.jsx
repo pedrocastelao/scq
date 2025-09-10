@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import styled from "styled-components";
 import { authService } from "../hooks/apiServices";
-import { use } from "react";
 
 const LoginContainer = styled.div`
   display: flex;
@@ -82,7 +81,7 @@ const ErrorMessage = styled.div`
 `;
 
 const LoginScreen = () => {
-  const { authenticateUser } = authService();
+  const { authenticateUser } = authService;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
