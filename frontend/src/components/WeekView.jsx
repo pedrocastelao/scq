@@ -1,5 +1,4 @@
 // WeekView.jsx
-import React from "react";
 import styled from "styled-components";
 import {
   format,
@@ -78,6 +77,7 @@ const WeekView = ({
   onWeekChange,
   reservasPaginadas,
   setIsModalOpen,
+  onCancelarReserva 
 }) => {
   const handlePreviousWeek = () => {
     onWeekChange(subWeeks(currentDate, 1));
@@ -145,6 +145,7 @@ const WeekView = ({
             key={reserva ? reserva.id : `new-reservation-${index}`}
             reserva={reserva}
             onNovaReserva={() => setIsModalOpen(true)}
+             onCancelar={onCancelarReserva} 
           />
         ))}
       </CardsGrid>

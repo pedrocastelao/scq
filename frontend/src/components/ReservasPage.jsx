@@ -1,5 +1,5 @@
 // ReservasPage.jsx
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import Filtros from "./Filtros";
 import Paginacao from "./Paginacao";
@@ -16,7 +16,7 @@ const ReservasContainer = styled.div`
 `;
 
 const ReservasPage = () => {
-  const { getReservas, createReserva } = reservaService;
+  const { getReservas, createReserva, cancelarReserva } = reservaService;
   const [reservas, setReservas] = useState([]); // Inicializa com uma lista vazia
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -42,6 +42,26 @@ const ReservasPage = () => {
 
     fetchReservas();
   }, []);
+
+  const handleCancelarReserva = async (reservaParaCancelar) => {
+      try {
+        // 1. Chama a API para cancelar a reserva no backend
+        await cancelarReserva(reservaParaCancelar.id);
+
+        // 2. Atualiza o estado local para refletir a mudança na UI instantaneamente
+        const novasReservas = reservas.map((reserva) =>
+          reserva.id === reservaParaCancelar.id
+            ? { ...reserva, status: "CANCELADA" } // Atualiza o status da reserva cancelada
+            : reserva
+        );
+        setReservas(novasReservas);
+
+      } catch (error) {
+        console.error("Erro ao cancelar reserva:", error);
+        // Exibir uma notificação de erro
+        alert("Falha ao cancelar a reserva. Tente novamente.");
+      }
+  };
 
   // Filtra as reservas da semana atual
   const reservasDaSemana = useMemo(() => {
@@ -110,6 +130,7 @@ const ReservasPage = () => {
         onWeekChange={handleWeekChange}
         reservasPaginadas={[null, ...reservasPaginadas]} // Add null as first item
         setIsModalOpen={setIsModalOpen}
+         onCancelarReserva={handleCancelarReserva}
       />
 
       {/* <CardsGrid>

@@ -18,6 +18,7 @@ Rotas.get(
   "/reserva/horarios/:data/:quadraId",
   reservaCtrl.listarHorariosDisponives
 );
+Rotas.put("/reserva/:id/cancelar", reservaCtrl.cancelarReserva);
 
 // Rotas de reservas
 Rotas.put("/reserva/:id/editar", reservaCtrl.updateReserva);

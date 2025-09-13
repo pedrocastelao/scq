@@ -1,29 +1,7 @@
 // ReservaCard.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaInfoCircle, FaTimesCircle, FaPlus } from "react-icons/fa"; // Importar ícones
 import styled from "styled-components";
-
-// const Card = styled.div`
-//   padding: 12px; // Reduced from 16px
-//   border-radius: 6px; // Reduced from 8px
-//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Reduced shadow
-//   background-color: white;
-//   border-left: 3px solid // Reduced from 4px
-//     ${(props) => {
-//       switch (props.status) {
-//         case "ATIVA":
-//           return "#4CAF50";
-//         case "FUTURA":
-//           return "#2196F3";
-//         case "VENCIDA":
-//           return "#FF9800";
-//         case "CANCELADA":
-//           return "#F44336";
-//         default:
-//           return "#grey";
-//       }
-//     }};
-// `;
 
 const Card = styled.div`
   position: relative;
@@ -128,28 +106,8 @@ const IconButton = styled.button`
   }
 `;
 
-// // Modal de Detalhes
-// const DetalhesModal = styled.div`
-//   background: white;
-//   padding: 30px;
-//   border-radius: 15px;
-//   max-width: 400px;
-//   width: 90%;
-//   position: relative;
 
-//   /* Estilo de bilhete */
-//   &::before {
-//     content: "";
-//     position: absolute;
-//     top: 0;
-//     left: 20px;
-//     right: 20px;
-//     height: 1px;
-//     border-top: 2px dashed #ddd;
-//   }
-// `;
-
-const ReservaCard = ({ reserva, onNovaReserva, onDetalhes, onCancelar }) => {
+const ReservaCard = ({ reserva, onNovaReserva, onCancelar }) => {
   const [showDetalhesModal, setShowDetalhesModal] = useState(false);
   const [showCancelarModal, setShowCancelarModal] = useState(false);
 

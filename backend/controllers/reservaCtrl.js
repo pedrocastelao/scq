@@ -2,6 +2,7 @@ const Quadra = require("../models/quadra");
 const Reserva = require("../models/reserva");
 const moment = require("moment");
 const cron = require("node-cron");
+const { Op } = require("sequelize");
 
 // Função para atualizar o status das reservas
 const atualizarStatusReservas = async () => {
@@ -42,7 +43,7 @@ const TIMEZONE = "America/Sao_Paulo";
 
 // Horários permitidos para reservas (configuráveis)
 let HORARIO_INICIO = moment.tz("08:00", "HH:mm", TIMEZONE);
-let HORARIO_FIM = moment.tz("20:00", "HH:mm", TIMEZONE);
+let HORARIO_FIM = moment.tz("22:00", "HH:mm", TIMEZONE);
 
 // Função para validar a reserva
 const validarReserva = (dataInicio, dataFim) => {
@@ -151,11 +152,38 @@ const reservaCtrl = {
       return res.status(400).json({ error: validacao.mensagem });
     }
 
-    const statusReserva = calcularStatusReserva(dataInicio, status);
-
-    console.log(statusReserva);
-
     try {
+
+      // ***** INÍCIO DA NOVA VALIDAÇÃO *****
+      // Verifica se já existe uma reserva para a mesma quadra no mesmo intervalo de tempo.
+      // Não consideramos reservas canceladas na verificação.
+      const reservaExistente = await Reserva.findOne({
+        where: {
+          quadraId: quadraId,
+          status: { [Op.ne]: 'CANCELADA' }, // Ignora reservas canceladas
+          [Op.or]: [ // Verifica sobreposição de horários
+            {
+              dataInicio: {
+                [Op.lt]: dataFim, // A reserva existente começa antes da nova terminar
+              },
+              dataFim: {
+                [Op.gt]: dataInicio, // E termina depois da nova começar
+              },
+            },
+          ],
+        },
+      });
+
+      // Se encontrar uma reserva conflitante, retorna um erro.
+      if (reservaExistente) {
+        return res.status(409).json({ // 409 Conflict é um status HTTP mais apropriado aqui
+          error: "Este horário já está reservado para a quadra selecionada.",
+        });
+      }
+      // ***** FIM DA NOVA VALIDAÇÃO *****
+
+      const statusReserva = calcularStatusReserva(dataInicio, status);
+
       const novaReserva = await Reserva.create({
         nome,
         // cpf,
@@ -218,107 +246,92 @@ const reservaCtrl = {
     const { data, quadraId } = req.params;
 
     try {
-      // Get all reservations for the specified date and court
-      const reservas = await Reserva.findAll({
-        where: { data, quadraId },
-        attributes: ["horaInicio", "horaFim"],
-      });
+        const diaInicio = moment.tz(data, "YYYY-MM-DD", "America/Sao_Paulo").startOf('day');
+        const diaFim = moment.tz(data, "YYYY-MM-DD", "America/Sao_Paulo").endOf('day');
 
-      // Define available time slots (24h format)
-      const horariosTotais = [
-        "08:00",
-        "09:00",
-        "10:00",
-        "11:00",
-        "12:00",
-        "13:00",
-        "14:00",
-        "15:00",
-        "16:00",
-        "17:00",
-        "18:00",
-        "19:00",
-        "20:00",
-      ];
+        // 1. CORREÇÃO: Busca reservas onde a data de início está dentro do dia solicitado
+        const reservas = await Reserva.findAll({
+            where: {
+                quadraId,
+                status: { [Op.ne]: 'CANCELADA' }, // Ignora reservas canceladas
+                dataInicio: {
+                    [Op.between]: [diaInicio.toDate(), diaFim.toDate()],
+                },
+            },
+            attributes: ["dataInicio", "dataFim"], // Atributos corretos
+        });
 
-      // Convert time string to minutes for easier comparison
-      const timeToMinutes = (timeStr) => {
-        const [hours, minutes] = timeStr.split(":").map(Number);
-        return hours * 60 + minutes;
-      };
+        // Horários de funcionamento (8h às 21h para início de reserva de 1h)
+        const horariosTotais = Array.from({ length: 14 }, (_, i) => `${(i + 8).toString().padStart(2, '0')}:00`);
 
-      // Convert minutes back to time string
-      const minutesToTime = (minutes) => {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours.toString().padStart(2, "0")}:${mins
-          .toString()
-          .padStart(2, "0")}`;
-      };
+        const horariosOcupados = new Set();
+        reservas.forEach((reserva) => {
+            // 2. CORREÇÃO: Extrai a hora de 'dataInicio' e 'dataFim'
+            const inicioReserva = moment(reserva.dataInicio);
+            const fimReserva = moment(reserva.dataFim);
+            
+            // Marca todos os slots de 1 hora que a reserva ocupa
+            for (let hora = inicioReserva.clone(); hora.isBefore(fimReserva); hora.add(1, 'hour')) {
+                horariosOcupados.add(hora.format("HH:mm"));
+            }
+        });
 
-      // Create array of occupied time slots
-      const horariosOcupados = new Set();
-      reservas.forEach((reserva) => {
-        const inicio = timeToMinutes(reserva.horaInicio.slice(0, 5));
-        const fim = timeToMinutes(reserva.horaFim.slice(0, 5));
+        // Filtra para remover horários passados (se a data for hoje)
+        const agora = moment.tz("America/Sao_Paulo");
+        
+        const horariosDisponiveis = horariosTotais.filter((horario) => {
+            if (diaInicio.isSame(agora, 'day')) {
+                const horaSlot = parseInt(horario.split(":")[0]);
+                if (horaSlot <= agora.hour()) {
+                    return false; // Remove horários que já passaram hoje
+                }
+            }
+            return !horariosOcupados.has(horario);
+        });
 
-        // Mark all hour slots between inicio and fim as occupied
-        for (let time = inicio; time < fim; time += 60) {
-          horariosOcupados.add(minutesToTime(time));
-        }
-      });
+        res.status(200).json({
+            horariosIndividuais: horariosDisponiveis,
+        });
 
-      // Check if current date and filter past hours
-      const agora = new Date();
-      const dataReserva = new Date(data);
-      const isToday = dataReserva.toDateString() === agora.toDateString();
-      const horaAtual = agora.getHours();
-
-      // Filter available times
-      const horariosDisponiveis = horariosTotais.filter((horario) => {
-        const horaSlot = parseInt(horario.split(":")[0]);
-
-        // If it's today, filter out past hours
-        if (isToday && horaSlot <= horaAtual) {
-          return false;
-        }
-
-        // Check if the time slot is not occupied
-        return !horariosOcupados.has(horario);
-      });
-
-      // Group consecutive available times
-      const periodosDisponiveis = [];
-      let periodoAtual = {
-        inicio: null,
-        fim: null,
-      };
-
-      horariosDisponiveis.forEach((horario, index) => {
-        if (!periodoAtual.inicio) {
-          periodoAtual.inicio = horario;
-        }
-
-        const proximoHorario = horariosDisponiveis[index + 1];
-        const horaAtual = timeToMinutes(horario);
-        const horaProxima = proximoHorario
-          ? timeToMinutes(proximoHorario)
-          : null;
-
-        if (!proximoHorario || horaProxima - horaAtual > 60) {
-          periodoAtual.fim = minutesToTime(timeToMinutes(horario) + 60);
-          periodosDisponiveis.push({ ...periodoAtual });
-          periodoAtual = { inicio: null, fim: null };
-        }
-      });
-
-      res.status(200).json({
-        horariosIndividuais: horariosDisponiveis,
-        periodosDisponiveis: periodosDisponiveis,
-      });
     } catch (error) {
-      console.error("Erro ao listar horários:", error);
-      res.status(500).json({ error: error.message });
+        console.error("Erro ao listar horários:", error);
+        res.status(500).json({ error: error.message });
+    }
+},
+
+   cancelarReserva: async (req, res) => {
+    // Pega o ID da reserva a partir dos parâmetros da URL
+    const { id } = req.params;
+
+    try {
+      // 1. Encontra a reserva pelo ID
+      const reserva = await Reserva.findByPk(id);
+
+      // 2. Verifica se a reserva existe
+      if (!reserva) {
+        return res.status(404).json({ error: "Reserva não encontrada." });
+      }
+
+      // 3. (Opcional) Adiciona uma regra de negócio: não permitir cancelar reservas que já venceram.
+      if (reserva.status === "VENCIDA") {
+        return res.status(400).json({ error: "Não é possível cancelar uma reserva que já venceu." });
+      }
+
+      // 4. (Opcional) Evita trabalho desnecessário se a reserva já estiver cancelada.
+       if (reserva.status === "CANCELADA") {
+        return res.status(200).json({ message: "Esta reserva já estava cancelada." });
+      }
+
+      // 5. Atualiza o status da reserva para "CANCELADA"
+      await reserva.update({ status: "CANCELADA" });
+
+      // 6. Retorna uma resposta de sucesso
+      res.status(200).json({ message: "Reserva cancelada com sucesso!" });
+
+    } catch (error) {
+      // Em caso de erro no servidor, retorna uma mensagem genérica
+      console.error("Erro ao cancelar reserva:", error);
+      res.status(500).json({ error: "Ocorreu um erro ao processar sua solicitação." });
     }
   },
 };

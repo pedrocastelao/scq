@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { quadrasService } from "../../hooks/apiServices";
+// Certifique-se de que reservaService está sendo exportado e importado corretamente.
+import { quadrasService, reservaService } from "../../hooks/apiServices"; 
 import { format, isAfter, isSameDay } from "date-fns";
 
 const FormContainer = styled.form`
@@ -64,6 +65,8 @@ const SubmitButton = styled.button`
 
 const NovaReservaForm = ({ onClose, onSubmit }) => {
   const { getQuadras } = quadrasService;
+ const { getHorariosDisponiveis } = reservaService;
+
   const [formData, setFormData] = useState({
     nome: "",
     dataInicio: format(new Date(), "yyyy-MM-dd"),
@@ -73,6 +76,7 @@ const NovaReservaForm = ({ onClose, onSubmit }) => {
     quadraId: "",
   });
   const [quadras, setQuadras] = useState([]);
+   const [horariosDisponiveis, setHorariosDisponiveis] = useState([]);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -91,33 +95,23 @@ const NovaReservaForm = ({ onClose, onSubmit }) => {
     fetchQuadras();
   }, []);
 
-  // Gerar horários disponíveis (apenas horas exatas)
-  const getHorariosDisponiveis = (isHoraFim = false, horaInicio = "") => {
-    const horarios = [];
-    const now = new Date();
-    const today = format(now, "yyyy-MM-dd");
-    const isToday = formData.dataInicio === today;
-
-    for (let i = 8; i <= 22; i++) {
-      const hora = `${i.toString().padStart(2, "0")}:00`;
-
-      if (isHoraFim) {
-        // Para hora fim, só mostrar horários depois da hora início e no máximo 2h depois
-        if (hora <= horaInicio) continue;
-
-        const horaInicioNum = parseInt(horaInicio.split(":")[0]);
-        if (i > horaInicioNum + 2) continue; // Limita a 2h após hora início
-      } else if (isToday) {
-        // Para hora início hoje, só mostrar horários futuros
-        const horaAtual = now.getHours();
-        if (i <= horaAtual) continue;
+  useEffect(() => {
+    const fetchHorarios = async () => {
+      if (formData.dataInicio && formData.quadraId) {
+        try {
+          // Usa a função do backend para buscar apenas horários livres
+          const response = await getHorariosDisponiveis(formData.dataInicio, formData.quadraId);
+          // O backend retorna um objeto { horariosIndividuais: [...] }
+          setHorariosDisponiveis(response.data.horariosIndividuais);
+        } catch (error) {
+          console.error("Erro ao buscar horários disponíveis:", error);
+          setHorariosDisponiveis([]); // Limpa os horários em caso de erro
+        }
       }
+    };
 
-      horarios.push(hora);
-    }
-
-    return horarios;
-  };
+    fetchHorarios();
+  }, [formData.dataInicio, formData.quadraId, getHorariosDisponiveis]);
 
   const validateForm = () => {
     const errors = {};
@@ -202,50 +196,8 @@ const NovaReservaForm = ({ onClose, onSubmit }) => {
       </FormGroup>
 
       <FormGroup>
-        <Label>Hora de Início</Label>
-        <Select
-          required
-          value={formData.horaInicio}
-          onChange={(e) => {
-            setFormData({
-              ...formData,
-              horaInicio: e.target.value,
-              horaFim: "", // Reseta hora fim ao mudar hora início
-            });
-            setErrors({});
-          }}
-        >
-          <option value="">Selecione um horário</option>
-          {getHorariosDisponiveis().map((hora) => (
-            <option key={hora} value={hora}>
-              {hora}
-            </option>
-          ))}
-        </Select>
-      </FormGroup>
 
-      <FormGroup>
-        <Label>Hora de Fim</Label>
-        <Select
-          required
-          value={formData.horaFim}
-          onChange={(e) => {
-            setFormData({ ...formData, horaFim: e.target.value });
-            setErrors({});
-          }}
-          disabled={!formData.horaInicio}
-        >
-          <option value="">Selecione um horário</option>
-          {getHorariosDisponiveis(true, formData.horaInicio).map((hora) => (
-            <option key={hora} value={hora}>
-              {hora}
-            </option>
-          ))}
-        </Select>
-        {errors.horaFim && <ErrorMessage>{errors.horaFim}</ErrorMessage>}
-      </FormGroup>
-
-      <FormGroup>
+         <FormGroup>
         <Label>Quadra</Label>
         <Select
           required
@@ -262,6 +214,61 @@ const NovaReservaForm = ({ onClose, onSubmit }) => {
           ))}
         </Select>
       </FormGroup>
+  <Label>Hora de Início</Label>
+  <Select
+    required
+    value={formData.horaInicio}
+    onChange={(e) => {
+      setFormData({
+        ...formData,
+        horaInicio: e.target.value,
+        horaFim: "",
+      });
+      setErrors({});
+    }}
+    disabled={!formData.quadraId || !formData.dataInicio} // Boa prática adicionar isso
+  >
+    <option value="">Selecione um horário</option>
+    {/* CORREÇÃO APLICADA AQUI 👇 */}
+    {horariosDisponiveis.map((hora) => (
+      <option key={hora} value={hora}>
+        {hora}
+      </option>
+    ))}
+  </Select>
+</FormGroup>
+<FormGroup>
+        <Label>Hora de Fim</Label>
+        <Select
+          required
+          value={formData.horaFim}
+          onChange={(e) => {
+            setFormData({ ...formData, horaFim: e.target.value });
+            setErrors({});
+          }}
+          disabled={!formData.horaInicio}
+        >
+          <option value="">Selecione um horário</option>
+          {/* Lógica para mostrar apenas horários válidos para o fim */}
+          {horariosDisponiveis
+            .filter(hora => {
+                const horaInicioNum = parseInt(formData.horaInicio.split(":")[0]);
+                const horaFimNum = parseInt(hora.split(":")[0]);
+                // A hora de fim deve ser maior que a de início e no máximo 2 horas depois
+                return hora > formData.horaInicio && horaFimNum <= horaInicioNum + 2
+            })
+            .map((hora) => (
+              // Adicionamos +1 hora ao horário para representar o fim do slot
+              // Ex: se o slot é das 09:00, o fim é às 10:00
+              <option key={hora} value={`${(parseInt(hora.split(':')[0]) + 1).toString().padStart(2, '0')}:00`}>
+                {`${(parseInt(hora.split(':')[0]) + 1).toString().padStart(2, '0')}:00`}
+              </option>
+          ))}
+        </Select>
+        {errors.horaFim && <ErrorMessage>{errors.horaFim}</ErrorMessage>}
+      </FormGroup>
+
+     
 
       <SubmitButton type="submit">Criar Reserva</SubmitButton>
     </FormContainer>
